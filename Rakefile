@@ -5,7 +5,7 @@ require 'spec/rake/spectask'
 require 'date'
 
 GEM = "rack_hoptoad"
-GEM_VERSION = "0.0.2"
+GEM_VERSION = "0.0.3"
 AUTHOR = "Corey Donohoe"
 EMAIL = "atmos@atmos.org"
 HOMEPAGE = "http://github.com/atmos/rack_hoptoad"
