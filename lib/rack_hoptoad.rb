@@ -1,4 +1,4 @@
-gem 'rack', '~>1.0.0'
+gem 'rack', '>=0.9.1'
 require 'rack'
 
 root = File.expand_path(File.dirname(__FILE__))
