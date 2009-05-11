@@ -40,8 +40,10 @@ module Rack
         :environment   => env.to_hash
       }
 
+      bad_request = Rack::Request.new(env)
+
       data[:request] = {
-        :params => Rack::Request.new(env).params
+        :params => {'request.path' => bad_request.path}.merge(bad_request.params)
       }
 
       data[:environment] = clean_hoptoad_environment(ENV.to_hash.merge(env))
