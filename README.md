@@ -15,3 +15,8 @@ Throw something like this in your config.ru to enable notifications.
 
 If your RACK_ENV variable is set to production it'll actually post to hoptoad.
 It won't process in the other environments.
+
+Installation
+============
+
+    % sudo gem install rack_hoptoad
