@@ -16,7 +16,7 @@ module Rack
       status, headers, body =
         begin
           @app.call(env)
-        rescue => boom
+        rescue StandardError, LoadError, SyntaxError => boom
           # TODO don't allow exceptions from send_notification to
           # propogate
           send_notification boom, env 
