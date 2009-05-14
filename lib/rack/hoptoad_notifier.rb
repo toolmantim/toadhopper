@@ -9,6 +9,7 @@ module Rack
     def initialize(app, api_key = nil)
       @app = app
       @api_key = api_key
+      @environment_filters = %w(AWS_ACCESS_KEY  AWS_SECRET_ACCESS_KEY AWS_ACCOUNT SSH_AUTH_SOCK)
       yield self if block_given?
     end
 
@@ -25,11 +26,10 @@ module Rack
       send_notification env['rack.exception'], env if env['rack.exception']
       [status, headers, body]
     end
-
-  private
-    def environment_filters
-      @environment_filters ||= %w(AWS_ACCESS_KEY  AWS_SECRET_ACCESS_KEY AWS_ACCOUNT SSH_AUTH_SOCK)
+    def environment_filter_keys
+      @environment_filters.flatten
     end
+  private
 
     def send_notification(exception, env)
       data = {
@@ -132,7 +132,7 @@ module Rack
 
     def clean_hoptoad_environment(environ) #:nodoc:
       environ.each do |k, v|
-        environ[k] = "[FILTERED]" if environment_filters.any? do |filter|
+        environ[k] = "[FILTERED]" if environment_filter_keys.any? do |filter|
           k.to_s.match(/#{filter}/)
         end
       end

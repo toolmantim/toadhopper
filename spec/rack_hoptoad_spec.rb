@@ -20,9 +20,11 @@ describe 'Rack::HoptoadNotifier' do
   end
 
   it 'yields a configuration object to the block when created' do
-    pending
-    notifier = Rack::HoptoadNotifier.new(@app, 'pollywog')
-    notifier.api_key.should.equal 'pollywog'
+    notifier = Rack::HoptoadNotifier.new(@app, 'pollywog') do |app|
+      app.environment_filters << %w(MY_SECRET_STUFF MY_SECRET_KEY)
+    end
+    notifier.environment_filter_keys.should include('MY_SECRET_STUFF')
+    notifier.environment_filter_keys.should include('MY_SECRET_KEY')
   end
 
   it 'catches exceptions raised from app, posts to hoptoad, and re-raises' do
