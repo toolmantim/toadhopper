@@ -27,3 +27,14 @@ Installation
 ============
 
     % sudo gem install rack_hoptoad
+
+Sinatra Notes
+=============
+
+In order for exceptions to propagate up to Rack in Sinatra you need to enable raise_errors
+
+    class MyApp < Sinatra::Default
+      enable :raise_errors
+    end
+
+Note that the errors block does not execute so you'll need to handle the 500 elsewhere.
