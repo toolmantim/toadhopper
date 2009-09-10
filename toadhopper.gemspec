@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
                          lib/toadhopper.rb
                          lib/toadhopper/test.rb
                          test/test_filter.rb
-                         test/test_post.rb
+                         test/test_notice_params.rb
                          test/test_setters.rb
                          test/test_test.rb
                        )
