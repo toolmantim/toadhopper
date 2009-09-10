@@ -16,4 +16,4 @@ You can use this to report plain old Ruby exceptions, or to build a library spec
 
      error = begin; raise "Kaboom!"; rescue => e; e; end
 
-     STDERR.puts Toadhopper.post!(error)
+     puts Toadhopper.post!(error)
