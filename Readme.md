@@ -7,13 +7,13 @@ You can use this to report plain old Ruby exceptions, or to build a library spec
 
 ## Example
 
-   require 'rubygems'
+     require 'rubygems'
 
-   gem 'toadhopper'
-   require 'toadhopper'
+     gem 'toadhopper'
+     require 'toadhopper'
 
-   Toadhopper.api_key = "YOURAPIKEY"
+     Toadhopper.api_key = "YOURAPIKEY"
 
-   error = begin; raise "Kaboom!"; rescue => e; e; end
+     error = begin; raise "Kaboom!"; rescue => e; e; end
 
-   STDERR.puts Toadhopper.post!(error)
+     STDERR.puts Toadhopper.post!(error)
