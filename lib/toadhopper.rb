@@ -1,9 +1,7 @@
 require 'net/http'
 require 'yaml'
-require 'timeout'
 
 module Toadhopper
-  class PostTimeoutError < StandardError; end
   class << self
     # Set the API key
     def api_key=(key)
@@ -43,8 +41,7 @@ module Toadhopper
         http.open_timeout = 2 # seconds
         begin
           http.post uri.path, {"notice" => notice_params(error, options)}.to_yaml, headers
-        rescue Timeout::TimeoutError => e
-          raise ToadHopper::PostTimeoutError
+        rescue TimeoutError => e
         end
        end
     end
