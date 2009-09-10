@@ -31,29 +31,51 @@ module Toadhopper
       end
     end
     # Posts an error to Hoptoad
-    def post(error, request, environment, session)
+    def post!(error, options={}, header_options={})
       uri = URI.parse("http://hoptoadapp.com/notices/")
       Net::HTTP.start(uri.host, uri.port) do |http|
-        headers = {'Content-type' => 'application/x-yaml', 'Accept' => 'text/xml, application/xml'}
+        headers = {
+          'Content-type'             => 'application/x-yaml',
+          'Accept'                   => 'text/xml, application/xml',
+          'X-Hoptoad-Client-Name'    => 'Toadhopper',
+        }.merge(header_options)
         http.read_timeout = 5 # seconds
         http.open_timeout = 2 # seconds
         begin
-           http.post(uri.path, notice_params(error, request, environment, session).to_yaml, headers)
+          http.post uri.path, {"notice" => notice_params(error, options)}.to_yaml, headers
         rescue Timeout::TimeoutError => e
           raise ToadHopper::PostTimeoutError
         end
        end
     end
-    def notice_params(error, request, environment, session) # :nodoc:
-      {
-        :api_key       => api_key,
-        :error_class   => error.class.name,
-        :error_message => "#{error.class.name}: #{error.message}",
-        :backtrace     => error.backtrace,
-        :request       => request,
-        :environment   => environment,
-        :session       => session
-      }
+    def notice_params(error, options={}) # :nodoc:
+      clean_non_serializable_data(stringify_keys(
+        {
+          :api_key       => api_key,
+          :error_class   => error.class.name,
+          :error_message => error.message,
+          :backtrace     => error.backtrace,
+        }.merge(options)
+      ))
+    end
+    def stringify_keys(hash) #:nodoc:
+      hash.inject({}) do |h, pair|
+        h[pair.first.to_s] = pair.last.is_a?(Hash) ? stringify_keys(pair.last) : pair.last
+        h
+      end
+    end
+    def serializable?(value) #:nodoc:
+      value.is_a?(Fixnum) ||
+      value.is_a?(Array) ||
+      value.is_a?(String) ||
+      value.is_a?(Hash) ||
+      value.is_a?(Bignum)
+    end
+    def clean_non_serializable_data(data) #:nodoc:
+      data.select{|k,v| serializable?(v) }.inject({}) do |h, pair|
+        h[pair.first] = pair.last.is_a?(Hash) ? clean_non_serializable_data(pair.last) : pair.last
+        h
+      end
     end
   end
 end

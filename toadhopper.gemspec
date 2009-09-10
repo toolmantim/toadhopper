@@ -11,6 +11,7 @@ Gem::Specification.new do |s|
   s.files            = %w(
                          Readme.md
                          Rakefile
+                         lib/toadhopper.rb
                          lib/toadhopper/test.rb
                          test/test_filter.rb
                          test/test_post.rb
