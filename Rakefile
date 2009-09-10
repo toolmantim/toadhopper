@@ -7,7 +7,7 @@ Rake::TestTask.new do |t|
 end
 
 begin
-  gem "sr-mg", "<= 0.0.2"
+  gem "sr-mg", "<= 0.0.5"
   require "mg"
   MG.new("toadhopper.gemspec")
 rescue LoadError
