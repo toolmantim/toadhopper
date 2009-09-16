@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name              = "toadhopper"
-  s.version           = "0.3"
+  s.version           = "0.4"
   s.extra_rdoc_files  = ["Readme.md"]
   s.summary           = "Library for posting Hoptoad notifications"
   s.description       = s.summary
@@ -14,6 +14,7 @@ Gem::Specification.new do |s|
                           Rakefile
                           lib/toadhopper.rb
                           lib/toadhopper/test.rb
+                          lib/toadhopper/test/methods.rb
                           test/test_filter.rb
                           test/test_notice_params.rb
                           test/test_setters.rb
