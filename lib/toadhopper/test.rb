@@ -1,1 +1,0 @@
-require 'toadhopper/test/methods'
