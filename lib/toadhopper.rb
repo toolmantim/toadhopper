@@ -7,7 +7,7 @@ class << self
   def api_key=(key)
     @api_key = key
   end
-  # Returns the key set by Toadhopper.api_key=
+  # Returns the API key
   def api_key
     @api_key
   end
@@ -17,16 +17,9 @@ class << self
   def filters=(*filters)
     @filters = filters.flatten
   end
-  # Returns the filters set by Toadhopper.filters=
+  # Returns the filters
   def filters
     [@filters].flatten.compact
-  end
-  # Replaces the values of the keys matching Toadhopper.filters with [FILTERED]. Typically used on the params and environment hashes.
-  def filter(hash)
-    hash.inject({}) do |acc, (key, val)|
-      acc[key] = filters.any? {|f| key.to_s =~ Regexp.new(f)} ? "[FILTERED]" : val
-      acc
-    end
   end
   # Posts an error to Hoptoad
   def post!(error, options={}, header_options={})
@@ -45,34 +38,42 @@ class << self
       end
      end
   end
-  def notice_params(error, options={}) # :nodoc:
-    clean_non_serializable_data(stringify_keys(
-      {
-        :api_key       => api_key,
-        :error_class   => error.class.name,
-        :error_message => error.message,
-        :backtrace     => error.backtrace,
-      }.merge(options)
-    ))
-  end
-  def stringify_keys(hash) #:nodoc:
-    hash.inject({}) do |h, pair|
-      h[pair.first.to_s] = pair.last.is_a?(Hash) ? stringify_keys(pair.last) : pair.last
-      h
+  private
+    # Replaces the values of the keys matching Toadhopper.filters with [FILTERED]. Typically used on the params and environment hashes.
+    def filter(hash)
+      hash.inject({}) do |acc, (key, val)|
+        acc[key] = filters.any? {|f| key.to_s =~ Regexp.new(f)} ? "[FILTERED]" : val
+        acc
+      end
     end
-  end
-  def serializable?(value) #:nodoc:
-    value.is_a?(Fixnum) ||
-    value.is_a?(Array) ||
-    value.is_a?(String) ||
-    value.is_a?(Hash) ||
-    value.is_a?(Bignum)
-  end
-  def clean_non_serializable_data(data) #:nodoc:
-    data.select{|k,v| serializable?(v) }.inject({}) do |h, pair|
-      h[pair.first] = pair.last.is_a?(Hash) ? clean_non_serializable_data(pair.last) : pair.last
-      h
+    def notice_params(error, options={}) # :nodoc:
+      clean_non_serializable_data(stringify_keys(
+        {
+          :api_key       => api_key,
+          :error_class   => error.class.name,
+          :error_message => error.message,
+          :backtrace     => error.backtrace,
+        }.merge(options)
+      ))
     end
-  end
+    def stringify_keys(hash) #:nodoc:
+      hash.inject({}) do |h, pair|
+        h[pair.first.to_s] = pair.last.is_a?(Hash) ? stringify_keys(pair.last) : pair.last
+        h
+      end
+    end
+    def serializable?(value) #:nodoc:
+      value.is_a?(Fixnum) ||
+      value.is_a?(Array) ||
+      value.is_a?(String) ||
+      value.is_a?(Hash) ||
+      value.is_a?(Bignum)
+    end
+    def clean_non_serializable_data(data) #:nodoc:
+      data.select{|k,v| serializable?(v) }.inject({}) do |h, pair|
+        h[pair.first] = pair.last.is_a?(Hash) ? clean_non_serializable_data(pair.last) : pair.last
+        h
+      end
+    end
 end
 end
