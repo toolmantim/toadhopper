@@ -1,6 +1,6 @@
 A base library for [Hoptoad](http://www.hoptoadapp.com/) error reporting.
 
-Toadhopper can be used to report plain old Ruby exceptions or to build a library specific gem, such as the yet-to-be-built toadhopper-sinatra and toadhopper-rack gems (they're next on my list).
+Toadhopper can be used to report plain old Ruby exceptions or to build a library specific gem.
 
 ## Example
 
