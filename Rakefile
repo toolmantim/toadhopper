@@ -17,7 +17,7 @@ begin
   gem "yard"
   require 'yard'
   YARD::Rake::YardocTask.new do |t|
-    t.options = ['-r', 'Readme.md', '--files', 'LICENSE'] # optional
+    t.options = ['-r', 'README.md', '--files', 'LICENSE'] # optional
   end
 rescue Gem::LoadError
 end
