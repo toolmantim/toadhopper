@@ -5,21 +5,21 @@ module Toadhopper
 class << self
   # Set the API key
   def api_key=(key)
-    @@api_key = key
+    @api_key = key
   end
   # Returns the key set by Toadhopper.api_key=
   def api_key
-    @@api_key
+    @api_key
   end
   # Sets patterns to [FILTER] out sensitive data such as passwords, emails and credit card numbers.
   #
   #   Toadhopper.filters = /password/, /email/, /credit_card_number/
   def filters=(*filters)
-    @@filters = filters.flatten
+    @filters = filters.flatten
   end
   # Returns the filters set by Toadhopper.filters=
   def filters
-    [@@filters].flatten.compact
+    [@filters].flatten.compact
   end
   # Replaces the values of the keys matching Toadhopper.filters with [FILTERED]. Typically used on the params and environment hashes.
   def filter(hash)
