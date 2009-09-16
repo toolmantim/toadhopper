@@ -1,8 +1,8 @@
 Gem::Specification.new do |s|
   s.name              = "toadhopper"
-  s.version           = "0.4"
+  s.version           = "0.5"
   s.extra_rdoc_files  = ["Readme.md"]
-  s.summary           = "Library for posting Hoptoad notifications"
+  s.summary           = "Post error notifications to Hoptoad"
   s.description       = s.summary
   s.authors           = ["Tim Lucas"]
   s.email             = "t.lucas@toolmantim.com"
