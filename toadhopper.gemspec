@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name              = "toadhopper"
   s.version           = "0.6"
-  s.extra_rdoc_files  = ["Readme.md"]
+  s.extra_rdoc_files  = ["README.md", "LICENSE"]
   s.summary           = "Post error notifications to Hoptoad"
   s.description       = s.summary
   s.authors           = ["Tim Lucas"]
