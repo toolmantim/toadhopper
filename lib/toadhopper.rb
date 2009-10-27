@@ -1,8 +1,15 @@
 require 'net/http'
 require 'yaml'
 
-module Toadhopper
-class << self
+class Toadhopper
+  def self.instance
+    @instance ||= new
+  end
+
+  def self.method_missing(name, *args)
+    instance.send(name, *args)
+  end
+
   # Set the API key
   def api_key=(key)
     @api_key = key
@@ -75,5 +82,4 @@ class << self
         h
       end
     end
-end
 end
