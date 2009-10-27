@@ -38,7 +38,6 @@ class << self
       end
      end
   end
-  private
     # Replaces the values of the keys matching Toadhopper.filters with [FILTERED]. Typically used on the params and environment hashes.
     def filter(hash)
       hash.inject({}) do |acc, (key, val)|
@@ -56,6 +55,7 @@ class << self
         }.merge(options)
       ))
     end
+    private
     def stringify_keys(hash) #:nodoc:
       hash.inject({}) do |h, pair|
         h[pair.first.to_s] = pair.last.is_a?(Hash) ? stringify_keys(pair.last) : pair.last
