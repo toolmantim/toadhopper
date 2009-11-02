@@ -5,11 +5,13 @@ class Toadhopper
   def self.instance
     @instance ||= new
   end
-
   def self.method_missing(name, *args)
     instance.send(name, *args)
   end
 
+  def initialize(api_key=nil)
+    self.api_key = api_key
+  end
   # Set the API key
   def api_key=(key)
     @api_key = key
@@ -82,4 +84,9 @@ class Toadhopper
         h
       end
     end
+end
+
+# Instanties a Toadhopper with the given api_key
+def Toadhopper(api_key)
+  Toadhopper.new(api_key)
 end
