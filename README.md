@@ -14,7 +14,9 @@ You can install it via rubygems:
 
     gem install toadhopper
 
-If you need to report different Hoptoad projects from the same Ruby process call a Toadhopper instance rather than the class methods: 
+## Multi-toad
+
+If you need to report errors to different Hoptoad projects from the same Ruby process create a Toadhopper instance with `Toadhopper('project api key')`. For example: 
 
     require 'toadhopper'
 
@@ -22,3 +24,8 @@ If you need to report different Hoptoad projects from the same Ruby process call
 
     puts Toadhopper("API key for project 1").post!(error)
     puts Toadhopper("API key for project 2").post!(error)
+
+## Contributors
+
+* [Tim Lucas](http://github.com/toolmantim)
+* [Samuel Tesla](http://github.com/stesla)
