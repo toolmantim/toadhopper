@@ -1,20 +1,18 @@
 require File.expand_path(File.join(File.dirname(__FILE__), 'helper'))
 
-class ToadHopper::Toadhopper::TestSetters < Test::Unit::TestCase
-  def setup
-    ToadHopper::Toadhopper.api_key = nil
-    ToadHopper::Toadhopper.filters = nil
-  end
+class ToadHopper::Dispatcher::TestSetters < Test::Unit::TestCase
   def test_setting_api_key
-    ToadHopper::Toadhopper.api_key = "abc123"
-    assert_equal "abc123", ToadHopper::Toadhopper.api_key
+    dispatcher = ToadHopper::Dispatcher.new('abc123')
+    assert_equal "abc123", dispatcher.api_key
   end
   def test_setting_single_filter
-    ToadHopper::Toadhopper.filters = /password/
-    assert_equal [/password/], ToadHopper::Toadhopper.filters
+    dispatcher = ToadHopper::Dispatcher.new
+    dispatcher.filters = /password/
+    assert_equal [/password/], dispatcher.filters
   end
   def test_setting_multple_filters
-    ToadHopper::Toadhopper.filters = /password/, /email/
-    assert_equal [/password/, /email/], ToadHopper::Toadhopper.filters
+    dispatcher = ToadHopper::Dispatcher.new
+    dispatcher.filters = /password/, /email/
+    assert_equal [/password/, /email/], dispatcher.filters
   end
 end

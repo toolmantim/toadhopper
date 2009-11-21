@@ -1,26 +1,30 @@
 require File.expand_path(File.join(File.dirname(__FILE__), 'helper'))
 
-class ToadHopper::Toadhopper::TestFilter < Test::Unit::TestCase
-  def setup
-    ToadHopper::Toadhopper.filters = nil
-  end
+class ToadHopper::Dispatcher::TestFilter < Test::Unit::TestCase
   def test_no_filters
+    dispatcher = ToadHopper::Dispatcher.new
     assert_equal(                 {:id => "myid", :password => "mypassword"},
-                 ToadHopper::Toadhopper.filter(:id => "myid", :password => "mypassword"))
+                 dispatcher.filter(:id => "myid", :password => "mypassword"))
   end
+
   def test_string_filter
-    ToadHopper::Toadhopper.filters = "pass"
+    dispatcher = ToadHopper::Dispatcher.new
+    dispatcher.filters = "pass"
     assert_equal(                 {:id => "myid", :password => "[FILTERED]"},
-                 ToadHopper::Toadhopper.filter(:id => "myid", :password => "mypassword"))
+                 dispatcher.filter(:id => "myid", :password => "mypassword"))
   end
+
   def test_regex_filter
-    ToadHopper::Toadhopper.filters = /pas{2}/
+    dispatcher = ToadHopper::Dispatcher.new
+    dispatcher.filters = /pas{2}/
     assert_equal(                 {:id => "myid", :password => "[FILTERED]"},
-                 ToadHopper::Toadhopper.filter(:id => "myid", :password => "mypassword"))
+                 dispatcher.filter(:id => "myid", :password => "mypassword"))
   end
+
   def test_multiple_filters
-    ToadHopper::Toadhopper.filters = "email", /pas{2}/
+    dispatcher = ToadHopper::Dispatcher.new
+    dispatcher.filters = "email", /pas{2}/
     assert_equal(                 {:id => "myid", :email => "[FILTERED]", :password => "[FILTERED]"},
-                 ToadHopper::Toadhopper.filter(:id => "myid", :email => "myemail", :password => "mypassword"))
+                 dispatcher.filter(:id => "myid", :email => "myemail", :password => "mypassword"))
   end
 end
