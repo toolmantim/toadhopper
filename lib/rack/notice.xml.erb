@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<notice version="2.0.0">
+  <api-key><%= @api_key %></api-key>
+  <notifier>
+    <name>Rack Hoptoad Notifier</name>
+    <version>0.0.4</version>
+    <url>http://github.com//atmos/rack_hoptoad</url>
+  </notifier>
+  <error>
+    <class><%= @error.class.name %></class>
+    <message><%= @error.message %></message>
+    <backtrace>
+      <% @backtrace.each do |line| %>
+        <line method="<%= line.method %>" file="<%= line.file %>" number="<%= line.number %>"/>
+      <% end %>
+    </backtrace>
+  </error>
+  <request>
+    <url><%= @request_path %></url>
+    <component><%= @request_path %></component>
+    <params>
+      <% @request.params.each do |key,value| %>
+        <var key="<%= key %>"><%= value %></var>
+      <% end %>
+    </params>
+    <cgi-data>
+      <% @environment.each do |key,value| %>
+        <var key="<%= key %>"><%= value %></var>
+      <% end %>
+    </cgi-data>
+  </request>
+  <server-environment>
+    <project-root><%= Dir.pwd %></project-root>
+    <environment-name><%= ENV['RACK_ENV'] || 'development' %></environment-name>
+  </server-environment>
+</notice>
