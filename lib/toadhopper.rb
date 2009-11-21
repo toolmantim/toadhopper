@@ -1,5 +1,8 @@
+root = File.expand_path(File.dirname(__FILE__))
 require 'net/http'
-require 'yaml'
+require 'haml'
+require 'haml/engine'
+require File.join(root, 'backtrace')
 
 class Toadhopper
   def self.instance
@@ -30,20 +33,38 @@ class Toadhopper
   def filters
     [@filters].flatten.compact
   end
+
+  def notice_template
+    ::File.read(::File.join(::File.dirname(__FILE__), 'notice.haml'))
+  end
+
+  def document_for(exception)
+    locals = { :error         => exception,
+               :api_key       => api_key,
+               :environment   => clean_non_serializable_data(ENV.to_hash),
+               :backtrace     => Backtrace.from_exception(exception), 
+               :framework_env => ENV['RACK_ENV'] || 'development' }
+    Haml::Engine.new(notice_template).render(Object.new, locals)
+  end
+
   # Posts an error to Hoptoad
   def post!(error, options={}, header_options={})
-    uri = URI.parse("http://hoptoadapp.com/notices/")
+    uri = URI.parse("http://hoptoadapp.com:80/notifier_api/v2/notices")
+    document = document_for(error)
+
     Net::HTTP.start(uri.host, uri.port) do |http|
       headers = {
-        'Content-type'             => 'application/x-yaml',
+        'Content-type'             => 'text/xml',
         'Accept'                   => 'text/xml, application/xml',
         'X-Hoptoad-Client-Name'    => 'Toadhopper',
       }.merge(header_options)
       http.read_timeout = 5 # seconds
       http.open_timeout = 2 # seconds
       begin
-        http.post uri.path, {"notice" => notice_params(error, options)}.to_yaml, headers
+        response = http.post uri.path, document, headers
+        response.code == 200
       rescue TimeoutError => e
+        false
       end
      end
   end
@@ -71,6 +92,7 @@ class Toadhopper
         h
       end
     end
+
     def serializable?(value) #:nodoc:
       value.is_a?(Fixnum) ||
       value.is_a?(Array) ||
@@ -78,6 +100,7 @@ class Toadhopper
       value.is_a?(Hash) ||
       value.is_a?(Bignum)
     end
+
     def clean_non_serializable_data(data) #:nodoc:
       data.select{|k,v| serializable?(v) }.inject({}) do |h, pair|
         h[pair.first] = pair.last.is_a?(Hash) ? clean_non_serializable_data(pair.last) : pair.last

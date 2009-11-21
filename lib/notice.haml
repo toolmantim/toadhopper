@@ -1,0 +1,16 @@
+!!!XML
+%notice{:version => '2.0.0'}
+  %api-key= api_key
+  %notifier
+    %name Toadhopper
+    %version 0.8
+    %url http://github.com/toolmantim/toadhopper
+  %error
+    %class= error.class.name
+    %message= error.message
+    %backtrace
+      - backtrace.each do |line|
+        %line{:method => line.method, :file => line.file, :number => line.number}
+  %server-environment
+    %project-root= Dir.pwd
+    %environment-name= framework_env

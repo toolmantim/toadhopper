@@ -1,6 +1,4 @@
-require File.dirname(__FILE__) + "/../lib/toadhopper"
-
-require 'test/unit'
+require File.expand_path(File.join(File.dirname(__FILE__), 'helper'))
 
 class Toadhopper::TestSetters < Test::Unit::TestCase
   def setup

@@ -1,6 +1,4 @@
-require File.dirname(__FILE__) + "/../lib/toadhopper"
-
-require 'test/unit'
+require File.expand_path(File.join(File.dirname(__FILE__), 'helper'))
 
 class Toadhopper::TestManyInstances < Test::Unit::TestCase
   def test_multiple_instances_with_different_api_keys
