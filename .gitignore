@@ -1,3 +1,5 @@
 /dist/
 .yardoc
-/doc/
+/doc/bin
+vendor
+bin
