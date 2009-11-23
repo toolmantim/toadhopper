@@ -1,5 +1,5 @@
-require 'rubygems'
+Bundler.require_env(:test)
 
-require File.dirname(__FILE__) + "/../lib/toadhopper"
+require File.join(File.dirname(__FILE__), "..", "lib", "toadhopper")
 require 'ruby-debug'
 require 'test/unit'

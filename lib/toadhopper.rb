@@ -74,12 +74,17 @@ module ToadHopper
     end
 
     private
-      def document_for(exception)
-        locals = { :error         => exception,
+      def document_for(exception, options = { })
+        locals = {
+          :error         => exception,
           :api_key       => api_key,
           :environment   => scrub_environment(ENV.to_hash),
-          :backtrace     => Backtrace.from_exception(exception), 
-          :framework_env => ENV['RACK_ENV'] || 'development' }
+          :backtrace     => Backtrace.from_exception(exception),
+          :url           => 'http://localhost/',
+          :component     => 'http://localhost/',
+          :request       => nil,
+          :framework_env => ENV['RACK_ENV'] || 'development' }.merge(options)
+
         Haml::Engine.new(notice_template).render(Object.new, locals)
       end
 

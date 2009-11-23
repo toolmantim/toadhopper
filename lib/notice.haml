@@ -11,6 +11,18 @@
     %backtrace
       - backtrace.each do |line|
         %line{:method => line.method, :file => line.file, :number => line.number}
+  %request
+    %url= url
+    %component= component
+    - if request && request.params.any?
+      %params
+        - request.params.each do |key,value|
+          %var{:key => key}= value
+    - if environment && environment.any?
+      %cgi-data
+        - environment.each do |key,value|
+          %var{:key => key}= value
+
   %server-environment
     %project-root= Dir.pwd
     %environment-name= framework_env
