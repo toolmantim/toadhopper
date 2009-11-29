@@ -18,16 +18,20 @@
   <request>
     <url><%= @request_path %></url>
     <component><%= @request_path %></component>
+	<% unless @request.params.empty? %>
     <params>
       <% @request.params.each do |key,value| %>
         <var key="<%= key %>"><%= value %></var>
       <% end %>
     </params>
+	<% end %>
+	<% unless @environment.empty? %>
     <cgi-data>
       <% @environment.each do |key,value| %>
         <var key="<%= key %>"><%= value %></var>
       <% end %>
     </cgi-data>
+	<% end %>
   </request>
   <server-environment>
     <project-root><%= Dir.pwd %></project-root>
