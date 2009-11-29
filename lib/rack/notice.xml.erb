@@ -3,7 +3,7 @@
   <api-key><%= @api_key %></api-key>
   <notifier>
     <name>Rack Hoptoad Notifier</name>
-    <version>0.0.4</version>
+    <version>0.0.5</version>
     <url>http://github.com//atmos/rack_hoptoad</url>
   </notifier>
   <error>
@@ -18,20 +18,20 @@
   <request>
     <url><%= @request_path %></url>
     <component><%= @request_path %></component>
-	<% unless @request.params.empty? %>
-    <params>
-      <% @request.params.each do |key,value| %>
-        <var key="<%= key %>"><%= value %></var>
-      <% end %>
-    </params>
-	<% end %>
-	<% unless @environment.empty? %>
-    <cgi-data>
-      <% @environment.each do |key,value| %>
-        <var key="<%= key %>"><%= value %></var>
-      <% end %>
-    </cgi-data>
-	<% end %>
+    <% if @request.params.any? %>
+      <params>
+        <% @request.params.each do |key,value| %>
+          <var key="<%= key %>"><%= value %></var>
+        <% end %>
+      </params>
+    <% end %>
+    <% unless @environment.empty? %>
+      <cgi-data>
+        <% @environment.each do |key,value| %>
+          <var key="<%= key %>"><%= value %></var>
+        <% end %>
+      </cgi-data>
+    <% end %>
   </request>
   <server-environment>
     <project-root><%= Dir.pwd %></project-root>
