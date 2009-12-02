@@ -25,7 +25,7 @@
         <% end %>
       </params>
     <% end %>
-    <% unless @environment.empty? %>
+    <% if @environment.any? %>
       <cgi-data>
         <% @environment.each do |key,value| %>
           <var key="<%= key %>"><%= value %></var>
