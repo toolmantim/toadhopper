@@ -1,4 +1,6 @@
-gem 'haml'
+only :release do
+  gem 'haml'
+end
 
 only :test do
   gem 'rake'
