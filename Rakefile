@@ -1,4 +1,4 @@
-require 'rubygems'
+Bundler.require_env(:development)
 require 'rake/testtask'
 
 Rake::TestTask.new do |t|
@@ -15,8 +15,6 @@ rescue Gem::LoadError
 end
 
 begin
-  gem "yard"
-  require 'yard'
   YARD::Rake::YardocTask.new do |t|
     t.options = ['-r', 'README.md', '--files', 'LICENSE'] # optional
   end

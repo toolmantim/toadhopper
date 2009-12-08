@@ -6,33 +6,50 @@ require 'nokogiri'
 require File.join(root, 'backtrace')
 
 module ToadHopper
+  # A class for handling hoptoad responses without exposing the transport layer
   class Response < Struct.new(:status, :body, :errors); end
 
+  # A class to Dispatch errors to a Hoptoad Project, many instances can be created
   class Dispatcher
     attr_accessor :api_key
-    def self.backtrace_for(exception)
-      Backtrace.from_exception(exception)
-    end
 
     def initialize(api_key=nil)
       self.api_key = api_key
     end
     # Sets patterns to [FILTER] out sensitive data such as passwords, emails and credit card numbers.
     #
-    #   Toadhopper.filters = /password/, /email/, /credit_card_number/
+    #   Toadhopper::Dispatcher.new('apikey').filters = /password/, /email/, /credit_card_number/
     def filters=(*filters)
       @filters = filters.flatten
     end
-    # Returns the filters
+
+    # Returns the filters for the Dispatcher
     def filters
       [@filters].flatten.compact
     end
 
+    # Post a v2 exception to hoptoad allowing for document options ot be overridden by library users
+    #   Toadhopper::Dispatcher.new('apikey').post!(exception, {:action => 'show', :controller => 'Users'})
+    # The Following Keys are available as parameters to the document_options
+    #   error            The actual exception to be reported
+    #   api_key          The api key for your project
+    #   url              The url for the request, required to post but not useful in a console environment
+    #   component        Normally this is your Controller name in an MVC framework
+    #   action           Normally the action for your request in an MVC framework
+    #   request          An object that response to #params and returns a hash
+    #   notifier_name    Say you're a different notifier than ToadHopper
+    #   notifier_version Specify the version of your custom notifier
+    #   session          A hash of the user session in a web request
+    #   framework_env    The framework environment your app is running under
+    #   backtrace        Normally not needed, parsed automatically from the provided exception parameter
+    #   environment      You MUST scrub your environment if you plan to use this, please do not use it though. :)
     def post!(error, document_options = { }, header_options = { })
       post_document(document_for(error, document_options), header_options)
     end
 
     # Posts a v2 document error to Hoptoad
+    # header_options can be passed in to indicate you're posting from a separate client
+    #   Toadhopper::Dispatcher.new('API KEY').post_document(doc, 'X-Hoptoad-Client-Name' => 'MyCustomDispatcher')
     def post_document(document, header_options = { })
       uri = URI.parse("http://hoptoadapp.com:80/notifier_api/v2/notices")
 
@@ -53,28 +70,17 @@ module ToadHopper
       end
     end
 
-    def response_for(response)
-      status = Integer(response.code)
-      case status
-      when 422
-        errors = Nokogiri::XML.parse(response.body).xpath('//errors/error')
-        Response.new(status, response.body, errors.map { |error| error.content })
-      else
-        Response.new(status, response.body, [ ])
-      end
-    end
-
-    # Replaces the values of the keys matching Toadhopper.filters with
-    # [FILTERED]. Typically used on the params and environment hashes.
-    def filter(hash)
-      hash.inject({}) do |acc, (key, val)|
-        acc[key] = filter?(key) ? "[FILTERED]" : val
-        acc
-      end
-    end
-
     private
-      def document_for(exception, options = { })
+      # Replaces the values of the keys matching Toadhopper.filters with
+      # [FILTERED]. Typically used on the params and environment hashes.
+      def filter(hash)
+        hash.inject({}) do |acc, (key, val)|
+          acc[key] = filter?(key) ? "[FILTERED]" : val
+        acc
+        end
+      end
+
+      def document_for(exception, options = { }) #:nodoc:
         locals = {
           :error            => exception,
           :api_key          => api_key,
@@ -92,7 +98,18 @@ module ToadHopper
         Haml::Engine.new(notice_template).render(Object.new, locals)
       end
 
-      def filter?(key)
+      def response_for(response) #:nodoc:
+        status = Integer(response.code)
+        case status
+        when 422
+          errors = Nokogiri::XML.parse(response.body).xpath('//errors/error')
+          Response.new(status, response.body, errors.map { |error| error.content })
+        else
+          Response.new(status, response.body, [ ])
+        end
+      end
+
+      def filter?(key) #:nodoc:
         filters.any? do |filter|
           key.to_s =~ Regexp.new(filter)
         end
@@ -117,7 +134,7 @@ module ToadHopper
         value.is_a?(Bignum)
       end
 
-      def notice_template
+      def notice_template #:nodoc:
         ::File.read(::File.join(::File.dirname(__FILE__), 'notice.haml'))
       end
     end
