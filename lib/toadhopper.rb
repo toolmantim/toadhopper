@@ -82,6 +82,7 @@ module ToadHopper
           :backtrace        => Backtrace.from_exception(exception),
           :url              => 'http://localhost/',
           :component        => 'http://localhost/',
+          :action           => nil,
           :request          => nil,
           :notifier_name    => 'ToadHopper',
           :notifier_version => '0.8',

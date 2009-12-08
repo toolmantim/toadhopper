@@ -14,6 +14,8 @@
   %request
     %url= url
     %component= component
+    - if action && !action.blank?
+      %action= action
     - if request && request.params.any?
       %params
         - request.params.each do |key,value|
