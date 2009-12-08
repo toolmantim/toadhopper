@@ -28,8 +28,8 @@ module ToadHopper
       [@filters].flatten.compact
     end
 
-    def post!(error, header_options = { })
-      post_document(document_for(error), header_options)
+    def post!(error, document_options = { }, header_options = { })
+      post_document(document_for(error, document_options), header_options)
     end
 
     # Posts a v2 document error to Hoptoad
