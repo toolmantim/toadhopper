@@ -18,6 +18,10 @@
       %params
         - request.params.each do |key,value|
           %var{:key => key}= value
+    - if session && session.any?
+      %session
+        - session.each do |key,value|
+          %var{:key => key}= value
     - if environment && environment.any?
       %cgi-data
         - environment.each do |key,value|

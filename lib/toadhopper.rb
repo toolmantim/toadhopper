@@ -85,6 +85,7 @@ module ToadHopper
           :request          => nil,
           :notifier_name    => 'ToadHopper',
           :notifier_version => '0.8',
+          :session          => { },
           :framework_env    => ENV['RACK_ENV'] || 'development' }.merge(options)
 
         Haml::Engine.new(notice_template).render(Object.new, locals)
