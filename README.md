@@ -14,6 +14,14 @@ You can install it via rubygems:
 
     gem install toadhopper
 
+## Development
+
+    % git clone git://github.com/toolmantim/toadhopper.git
+    % cd toadhopper
+    % gem bundle
+    % bin/rake test
+    % bin/rake doc && open doc/index.html
+
 ## Contributors
 
 * [Tim Lucas](http://github.com/toolmantim)
