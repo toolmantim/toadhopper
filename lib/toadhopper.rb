@@ -70,15 +70,16 @@ module ToadHopper
       end
     end
 
+    def filter(hash)
+      hash.inject({}) do |acc, (key, val)|
+        acc[key] = filter?(key) ? "[FILTERED]" : val
+      acc
+      end
+    end
+
     private
       # Replaces the values of the keys matching Toadhopper.filters with
       # [FILTERED]. Typically used on the params and environment hashes.
-      def filter(hash)
-        hash.inject({}) do |acc, (key, val)|
-          acc[key] = filter?(key) ? "[FILTERED]" : val
-        acc
-        end
-      end
 
       def document_for(exception, options = { }) #:nodoc:
         locals = {

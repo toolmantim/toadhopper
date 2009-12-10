@@ -7,7 +7,7 @@
     %url http://github.com/toolmantim/toadhopper
   %error
     %class= error.class.name
-    %message= error.message
+    %message= "#{error.class.name}: #{error.message}"
     %backtrace
       - backtrace.each do |line|
         %line{:method => line.method, :file => line.file, :number => line.number}
