@@ -10,6 +10,6 @@ end
 only :test do
   gem 'rake'
   gem 'nokogiri'
-  gem 'ruby-debug'
+  gem 'test-unit', :require_as => 'test/unit'
 end
 
