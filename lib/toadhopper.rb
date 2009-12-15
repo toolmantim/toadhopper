@@ -27,44 +27,46 @@ class ToadHopper
   end
 
   # Posts an exception to hoptoad.
-  #   Toadhopper.new('apikey').post!(error, {:action => 'show', :controller => 'Users'})
-  # The Following Keys are available as parameters to the document_options
-  #   url              The url for the request, required to post but not useful in a console environment
-  #   component        Normally this is your Controller name in an MVC framework
-  #   action           Normally the action for your request in an MVC framework
-  #   request          An object that response to #params and returns a hash
-  #   notifier_name    Say you're a different notifier than ToadHopper
-  #   notifier_version Specify the version of your custom notifier
-  #   notifier_url     Specify the project URL of your custom notifier
-  #   session          A hash of the user session in a web request
-  #   framework_env    The framework environment your app is running under
-  #   backtrace        Normally not needed, parsed automatically from the provided exception parameter
-  #   environment      You MUST scrub your environment if you plan to use this, please do not use it though. :)
-  #   project_root     The root directory of your app
   #
-  # @return Toadhopper::Response
-  def post!(error, document_options={}, header_options={})
-    post_document(document_for(error, document_options), header_options)
+  # @param [Exception] error the error to post
+  #
+  # @param [Hash] options
+  # @option options [String]  url              The url for the request, required to post but not useful in a console environment
+  # @option options [String]  component        Normally this is your Controller name in an MVC framework
+  # @option options [String]  action           Normally the action for your request in an MVC framework
+  # @option options [#params] request          An object that response to #params and returns a hash
+  # @option options [String]  notifier_name    Say you're a different notifier than ToadHopper
+  # @option options [String]  notifier_version Specify the version of your custom notifier
+  # @option options [String]  notifier_url     Specify the project URL of your custom notifier
+  # @option options [Hash]    session          A hash of the user session in a web request
+  # @option options [String]  framework_env    The framework environment your app is running under
+  # @option options [Array]   backtrace        Normally not needed, parsed automatically from the provided exception parameter
+  # @option options [Hash]    environment      You MUST scrub your environment if you plan to use this, please do not use it though. :)
+  # @option options [String]  project_root     The root directory of your app
+  #
+  # @param [Hash] http_headers extra HTTP headers to be sent in the post to the API
+  #
+  # @example
+  #   Toadhopper.new('apikey').post! error,
+  #                                  {:action => 'show', :controller => 'Users'},
+  #                                  {'X-Hoptoad-Client-Name' => 'My Awesome Notifier'}
+  #
+  # @return [Response]
+  def post!(error, options={}, http_headers={})
+    options[:notifier_name] ||= 'ToadHopper'
+    post_document(document_for(error, options), {'X-Hoptoad-Client-Name' => options[:notifier_name]})
   end
 
-  # Posts a v2 document error to Hoptoad
-  # header_options can be passed in to indicate you're posting from a separate client
-  #   Toadhopper.new('API KEY').post_document(doc, 'X-Hoptoad-Client-Name' => 'MyCustomLib')
-  #
   # @private
-  def post_document(document, header_options={})
+  def post_document(document, headers={})
     uri = URI.parse("http://hoptoadapp.com:80/notifier_api/v2/notices")
-
     Net::HTTP.start(uri.host, uri.port) do |http|
-      headers = {
-        'Content-type'             => 'text/xml',
-        'Accept'                   => 'text/xml, application/xml',
-        'X-Hoptoad-Client-Name'    => 'Toadhopper',
-      }.merge(header_options)
       http.read_timeout = 5 # seconds
       http.open_timeout = 2 # seconds
       begin
-        response = http.post(uri.path, document, headers)
+        response = http.post uri.path,
+                             document,
+                             {'Content-type' => 'text/xml', 'Accept' => 'text/xml, application/xml'}.merge(headers)
         Response.new response.code.to_i,
                      response.body,
                      Nokogiri::XML.parse(response.body).xpath('//errors/error').map {|e| e.content}
@@ -76,7 +78,7 @@ class ToadHopper
 
   # @private
   def document_for(exception, options={})
-    locals = {
+    defaults = {
       :error            => exception,
       :api_key          => api_key,
       :environment      => clean(ENV.to_hash),
@@ -85,7 +87,6 @@ class ToadHopper
       :component        => 'http://localhost/',
       :action           => nil,
       :request          => nil,
-      :notifier_name    => 'ToadHopper',
       :notifier_version => VERSION,
       :notifier_url     => 'http://github.com/toolmantim/toadhopper',
       :session          => {},
@@ -93,7 +94,7 @@ class ToadHopper
       :project_root     => Dir.pwd
     }.merge(options)
 
-    Haml::Engine.new(notice_template).render(Object.new, locals)
+    Haml::Engine.new(notice_template).render(Object.new, defaults)
   end
   
   # @private
