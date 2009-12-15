@@ -3,8 +3,8 @@ only :release do
 end
 
 only :development do
+  gem 'mg'
   gem 'yard'
-  gem 'BlueCloth', :require_as => nil
 end
 
 only :test do
