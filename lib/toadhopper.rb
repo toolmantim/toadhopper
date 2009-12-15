@@ -42,6 +42,7 @@ module ToadHopper
     #   framework_env    The framework environment your app is running under
     #   backtrace        Normally not needed, parsed automatically from the provided exception parameter
     #   environment      You MUST scrub your environment if you plan to use this, please do not use it though. :)
+    #   project_root     The root directory of your app
     #
     # @return Toadhopper::Response
     def post!(error, document_options={}, header_options={})
@@ -88,8 +89,10 @@ module ToadHopper
         :request          => nil,
         :notifier_name    => 'ToadHopper',
         :notifier_version => '0.8',
-        :session          => { },
-        :framework_env    => ENV['RACK_ENV'] || 'development' }.merge(options)
+        :session          => {},
+        :framework_env    => ENV['RACK_ENV'] || 'development',
+        :project_root     => Dir.pwd
+      }.merge(options)
 
       Haml::Engine.new(notice_template).render(Object.new, locals)
     end
