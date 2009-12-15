@@ -1,4 +1,7 @@
-gem 'rack',        :require_as => [ ]
+only :release do
+  gem 'rack'
+  gem 'toadhopper', '~>0.9.1'
+end
 
 only :test do
   gem 'rake'

@@ -3,9 +3,10 @@ require 'rake/gempackagetask'
 require 'rubygems/specification'
 require 'spec/rake/spectask'
 require 'date'
+require 'bundler'
 
 GEM = "rack_hoptoad"
-GEM_VERSION = "0.0.6"
+GEM_VERSION = "0.1.0"
 AUTHOR = "Corey Donohoe"
 EMAIL = "atmos@atmos.org"
 HOMEPAGE = "http://github.com/atmos/rack_hoptoad"
@@ -23,21 +24,18 @@ spec = Gem::Specification.new do |s|
   s.email = EMAIL
   s.homepage = HOMEPAGE
 
-  # Uncomment this to add a dependency
-  s.add_dependency "rack"
+  manifest = Bundler::Environment.load(File.dirname(__FILE__) + '/Gemfile')
+  manifest.dependencies.each do |d|
+    next unless d.only && d.only.include?('release')
+    s.add_dependency(d.name, d.version)
+  end
 
   s.require_path = 'lib'
-  s.autorequire = GEM
   s.files = %w(LICENSE README.md Rakefile TODO) + Dir.glob("{lib,specs}/**/*")
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
-end
-
-desc "install the gem locally"
-task :install => [:package] do
-  sh %{sudo gem install pkg/#{GEM}-#{GEM_VERSION}}
 end
 
 desc "create a gemspec file"
@@ -60,6 +58,5 @@ namespace :rack_hoptoad do
     t.rcov = ENV.has_key?('NO_RCOV') ? ENV['NO_RCOV'] != 'true' : true
     t.rcov_opts << '--text-summary'
     t.rcov_opts << '--sort' << 'coverage' << '--sort-reverse'
-#    t.rcov_opts << '--only-uncovered'
   end
 end
