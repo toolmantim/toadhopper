@@ -1,5 +1,5 @@
 only :release do
-  gem 'haml'
+  gem 'haml', '~> 2.0'
 end
 
 only :development do
