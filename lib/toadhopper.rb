@@ -1,9 +1,7 @@
-root = File.expand_path(File.dirname(__FILE__))
 require 'net/http'
 require 'haml'
 require 'haml/engine'
 require 'nokogiri'
-require File.join(root, 'backtrace')
 
 module ToadHopper
   # Hoptoad API response
@@ -85,7 +83,7 @@ module ToadHopper
         :error            => exception,
         :api_key          => api_key,
         :environment      => scrub_environment(ENV.to_hash),
-        :backtrace        => Backtrace.from_exception(exception),
+        :backtrace        => exception.backtrace.map {|l| backtrace_line(l)},
         :url              => 'http://localhost/',
         :component        => 'http://localhost/',
         :action           => nil,
@@ -96,6 +94,11 @@ module ToadHopper
         :framework_env    => ENV['RACK_ENV'] || 'development' }.merge(options)
 
       Haml::Engine.new(notice_template).render(Object.new, locals)
+    end
+    
+    # @private
+    def backtrace_line(line)
+      Struct.new(:file, :number, :method).new(*line.match(%r{^([^:]+):(\d+)(?::in `([^']+)')?$}).captures)
     end
 
     # @private
