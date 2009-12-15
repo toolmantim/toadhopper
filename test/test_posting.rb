@@ -10,9 +10,9 @@ class ToadHopper::Dispatcher::TestPosting < Test::Unit::TestCase
     assert_equal ['No project exists with the given API key.'], response.errors
   end
 
-  if ENV['MY_HOPTOAD_API_KEY']
+  if ENV['HOPTOAD_API_KEY']
     def test_posting_integration
-      dispatcher = ToadHopper::Dispatcher.new(ENV['MY_HOPTOAD_API_KEY'])
+      dispatcher = ToadHopper::Dispatcher.new(ENV['HOPTOAD_API_KEY'])
       error = begin; raise "Kaboom!"; rescue => e; e end
 
       response = dispatcher.post!(error)
