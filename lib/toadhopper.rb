@@ -32,8 +32,6 @@ module ToadHopper
     # Posts an exception to hoptoad.
     #   Toadhopper::Dispatcher.new('apikey').post!(error, {:action => 'show', :controller => 'Users'})
     # The Following Keys are available as parameters to the document_options
-    #   error            The actual exception to be reported
-    #   api_key          The api key for your project
     #   url              The url for the request, required to post but not useful in a console environment
     #   component        Normally this is your Controller name in an MVC framework
     #   action           Normally the action for your request in an MVC framework
