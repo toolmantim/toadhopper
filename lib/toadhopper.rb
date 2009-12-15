@@ -69,8 +69,10 @@ module ToadHopper
         http.read_timeout = 5 # seconds
         http.open_timeout = 2 # seconds
         begin
-          response = http.post uri.path, document, headers
-          response_for(response)
+          response = http.post(uri.path, document, headers)
+          Response.new response.code.to_i,
+                       response.body,
+                       Nokogiri::XML.parse(response.body).xpath('//errors/error').map {|e| e.content}
         rescue TimeoutError => e
           Response.new(500, '', ['Timeout error'])
         end
@@ -94,18 +96,6 @@ module ToadHopper
         :framework_env    => ENV['RACK_ENV'] || 'development' }.merge(options)
 
       Haml::Engine.new(notice_template).render(Object.new, locals)
-    end
-
-    # @private
-    def response_for(http_response)
-      status = Integer(http_response.code)
-      case status
-      when 422
-        errors = Nokogiri::XML.parse(http_response.body).xpath('//errors/error')
-        Response.new(status, http_response.body, errors.map { |error| error.content })
-      else
-        Response.new(status, http_response.body, [])
-      end
     end
 
     # @private
