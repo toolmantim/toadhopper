@@ -100,6 +100,11 @@ module ToadHopper
     def backtrace_line(line)
       Struct.new(:file, :number, :method).new(*line.match(%r{^([^:]+):(\d+)(?::in `([^']+)')?$}).captures)
     end
+    
+    # @private
+    def notice_template
+      File.read(::File.join(::File.dirname(__FILE__), 'notice.haml'))
+    end
 
     # @private
     def filter(hash)
@@ -136,11 +141,6 @@ module ToadHopper
       value.is_a?(String) ||
       value.is_a?(Hash) ||
       value.is_a?(Bignum)
-    end
-
-    # @private
-    def notice_template
-      File.read(::File.join(::File.dirname(__FILE__), 'notice.haml'))
     end
   end
 end
