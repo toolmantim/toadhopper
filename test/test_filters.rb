@@ -1,6 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), 'helper'))
 
-class ToadHopper::Dispatcher::TestClean < Test::Unit::TestCase
+class ToadHopper::Dispatcher::TestFilters < Test::Unit::TestCase
   def dispatcher
     @dispatcher ||= ToadHopper::Dispatcher.new("test api key")
   end
