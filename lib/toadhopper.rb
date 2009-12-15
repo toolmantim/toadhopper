@@ -30,7 +30,7 @@ module ToadHopper
     end
 
     # Posts an exception to hoptoad.
-    #   Toadhopper::Dispatcher.new('apikey').post!(exception, {:action => 'show', :controller => 'Users'})
+    #   Toadhopper::Dispatcher.new('apikey').post!(error, {:action => 'show', :controller => 'Users'})
     # The Following Keys are available as parameters to the document_options
     #   error            The actual exception to be reported
     #   api_key          The api key for your project
