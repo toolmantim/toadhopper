@@ -14,9 +14,11 @@ Jeweler::Tasks.new do |s|
   s.email    = "t.lucas@toolmantim.com"
   s.homepage = "http://github.com/toolmantim/toadhopper"
   s.authors  = ["Tim Lucas", "Samuel Tesla", "Corey Donohoe"]
-  s.version  = "0.8"
   s.extra_rdoc_files  = ["README.md", "LICENSE"]
   s.executables = nil # stops jeweler automatically adding bin/*
+  
+  require File.join(File.dirname(__FILE__), 'lib', 'toadhopper')
+  s.version  = ToadHopper::VERSION
 
   require 'bundler'
   bundler_env = Bundler::Environment.load(File.dirname(__FILE__) + '/Gemfile')

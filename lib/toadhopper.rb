@@ -4,11 +4,14 @@ require 'haml/engine'
 require 'nokogiri'
 
 module ToadHopper
+  VERSION = "0.8"
+  
   # Hoptoad API response
   class Response < Struct.new(:status, :body, :errors); end
 
   # Posts errors to the Hoptoad API
   class Dispatcher
+    
     attr_reader :api_key
 
     def initialize(api_key)
@@ -89,7 +92,7 @@ module ToadHopper
         :action           => nil,
         :request          => nil,
         :notifier_name    => 'ToadHopper',
-        :notifier_version => '0.8',
+        :notifier_version => VERSION,
         :notifier_url     => 'http://github.com/toolmantim/toadhopper',
         :session          => {},
         :framework_env    => ENV['RACK_ENV'] || 'development',
