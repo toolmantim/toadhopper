@@ -1,8 +1,12 @@
 module ToadHopper
-  # A class to represent a line in a ruby Backtrace
+  # A line in a ruby Backtrace
+  #
+  # @private
   class BacktraceLine < Struct.new(:file, :number, :method); end
 
-  # A collection of BacktraceLines reprsenting an entire ruby backtrace
+  # A collection of BacktraceLines representing an entire ruby backtrace
+  #
+  # @private
   class Backtrace
     INPUT_FORMAT = %r{^([^:]+):(\d+)(?::in `([^']+)')?$}.freeze
 
@@ -18,7 +22,7 @@ module ToadHopper
     end
 
     # iterate over the lines in a Backtrace
-    def each_line(&block) #:nodoc:
+    def each_line(&block)
       lines.each do |line|
         yield line
       end

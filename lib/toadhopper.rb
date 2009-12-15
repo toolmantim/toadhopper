@@ -6,16 +6,17 @@ require 'nokogiri'
 require File.join(root, 'backtrace')
 
 module ToadHopper
-  # A class for handling hoptoad responses without exposing the transport layer
+  # Hoptoad API response
   class Response < Struct.new(:status, :body, :errors); end
 
-  # A class to Dispatch errors to a Hoptoad Project, many instances can be created
+  # Posts errors to the Hoptoad API
   class Dispatcher
-    attr_accessor :api_key
+    attr_reader :api_key
 
-    def initialize(api_key=nil)
-      self.api_key = api_key
+    def initialize(api_key)
+      @api_key = api_key
     end
+    
     # Sets patterns to [FILTER] out sensitive data such as passwords, emails and credit card numbers.
     #
     #   Toadhopper::Dispatcher.new('apikey').filters = /password/, /email/, /credit_card_number/
@@ -23,12 +24,14 @@ module ToadHopper
       @filters = filters.flatten
     end
 
-    # Returns the filters for the Dispatcher
+    # Filters for the Dispatcher
+    #
+    # @return [Regexp]
     def filters
       [@filters].flatten.compact
     end
 
-    # Post a v2 exception to hoptoad allowing for document options ot be overridden by library users
+    # Posts an exception to hoptoad.
     #   Toadhopper::Dispatcher.new('apikey').post!(exception, {:action => 'show', :controller => 'Users'})
     # The Following Keys are available as parameters to the document_options
     #   error            The actual exception to be reported
@@ -43,14 +46,18 @@ module ToadHopper
     #   framework_env    The framework environment your app is running under
     #   backtrace        Normally not needed, parsed automatically from the provided exception parameter
     #   environment      You MUST scrub your environment if you plan to use this, please do not use it though. :)
-    def post!(error, document_options = { }, header_options = { })
+    #
+    # @return Toadhopper::Response
+    def post!(error, document_options={}, header_options={})
       post_document(document_for(error, document_options), header_options)
     end
 
     # Posts a v2 document error to Hoptoad
     # header_options can be passed in to indicate you're posting from a separate client
     #   Toadhopper::Dispatcher.new('API KEY').post_document(doc, 'X-Hoptoad-Client-Name' => 'MyCustomDispatcher')
-    def post_document(document, header_options = { })
+    #
+    # @private
+    def post_document(document, header_options={})
       uri = URI.parse("http://hoptoadapp.com:80/notifier_api/v2/notices")
 
       Net::HTTP.start(uri.host, uri.port) do |http|
@@ -70,6 +77,38 @@ module ToadHopper
       end
     end
 
+    # @private
+    def document_for(exception, options={})
+      locals = {
+        :error            => exception,
+        :api_key          => api_key,
+        :environment      => scrub_environment(ENV.to_hash),
+        :backtrace        => Backtrace.from_exception(exception),
+        :url              => 'http://localhost/',
+        :component        => 'http://localhost/',
+        :action           => nil,
+        :request          => nil,
+        :notifier_name    => 'ToadHopper',
+        :notifier_version => '0.8',
+        :session          => { },
+        :framework_env    => ENV['RACK_ENV'] || 'development' }.merge(options)
+
+      Haml::Engine.new(notice_template).render(Object.new, locals)
+    end
+
+    # @private
+    def response_for(http_response)
+      status = Integer(http_response.code)
+      case status
+      when 422
+        errors = Nokogiri::XML.parse(http_response.body).xpath('//errors/error')
+        Response.new(status, http_response.body, errors.map { |error| error.content })
+      else
+        Response.new(status, http_response.body, [])
+      end
+    end
+
+    # @private
     def filter(hash)
       hash.inject({}) do |acc, (key, val)|
         acc[key] = filter?(key) ? "[FILTERED]" : val
@@ -77,66 +116,38 @@ module ToadHopper
       end
     end
 
-    private
-      # Replaces the values of the keys matching Toadhopper.filters with
-      # [FILTERED]. Typically used on the params and environment hashes.
-
-      def document_for(exception, options = { }) #:nodoc:
-        locals = {
-          :error            => exception,
-          :api_key          => api_key,
-          :environment      => scrub_environment(ENV.to_hash),
-          :backtrace        => Backtrace.from_exception(exception),
-          :url              => 'http://localhost/',
-          :component        => 'http://localhost/',
-          :action           => nil,
-          :request          => nil,
-          :notifier_name    => 'ToadHopper',
-          :notifier_version => '0.8',
-          :session          => { },
-          :framework_env    => ENV['RACK_ENV'] || 'development' }.merge(options)
-
-        Haml::Engine.new(notice_template).render(Object.new, locals)
-      end
-
-      def response_for(response) #:nodoc:
-        status = Integer(response.code)
-        case status
-        when 422
-          errors = Nokogiri::XML.parse(response.body).xpath('//errors/error')
-          Response.new(status, response.body, errors.map { |error| error.content })
-        else
-          Response.new(status, response.body, [ ])
-        end
-      end
-
-      def filter?(key) #:nodoc:
-        filters.any? do |filter|
-          key.to_s =~ Regexp.new(filter)
-        end
-      end
-
-      def scrub_environment(hash)
-        filter(clean_non_serializable_data(hash))
-      end
-
-      def clean_non_serializable_data(data) #:nodoc:
-        data.select{|k,v| serializable?(v) }.inject({}) do |h, pair|
-          h[pair.first] = pair.last.is_a?(Hash) ? clean_non_serializable_data(pair.last) : pair.last
-          h
-        end
-      end
-
-      def serializable?(value) #:nodoc:
-        value.is_a?(Fixnum) ||
-        value.is_a?(Array) ||
-        value.is_a?(String) ||
-        value.is_a?(Hash) ||
-        value.is_a?(Bignum)
-      end
-
-      def notice_template #:nodoc:
-        ::File.read(::File.join(::File.dirname(__FILE__), 'notice.haml'))
+    # @private
+    def filter?(key)
+      filters.any? do |filter|
+        key.to_s =~ Regexp.new(filter)
       end
     end
+
+    # @private
+    def scrub_environment(hash)
+      filter(clean_non_serializable_data(hash))
+    end
+
+    # @private
+    def clean_non_serializable_data(data)
+      data.select{|k,v| serializable?(v) }.inject({}) do |h, pair|
+        h[pair.first] = pair.last.is_a?(Hash) ? clean_non_serializable_data(pair.last) : pair.last
+        h
+      end
+    end
+
+    # @private
+    def serializable?(value)
+      value.is_a?(Fixnum) ||
+      value.is_a?(Array) ||
+      value.is_a?(String) ||
+      value.is_a?(Hash) ||
+      value.is_a?(Bignum)
+    end
+
+    # @private
+    def notice_template
+      File.read(::File.join(::File.dirname(__FILE__), 'notice.haml'))
+    end
+  end
 end
