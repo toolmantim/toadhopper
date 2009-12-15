@@ -1,7 +1,7 @@
-/dist/
-.yardoc
+/pkg
+/.yardoc
 /doc/bin
-vendor
-bin
-doc
-toadhopper.gemspec
+/vendor
+/bin
+/doc
+/toadhopper.gemspec
