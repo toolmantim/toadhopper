@@ -16,11 +16,17 @@ You can install it via rubygems:
 
 ## Development
 
+Firstly, `gem install bundler`, then:
+
     % git clone git://github.com/toolmantim/toadhopper.git
     % cd toadhopper
     % gem bundle
     % bin/rake test
     % bin/rake doc && open doc/index.html
+
+If you set a `HOPTOAD_API_KEY` environment variable it'll test actually posting to the Hoptoad API. For example:
+
+    % bin/rake test HOPTOAD_API_KEY=abc123
 
 ## Contributors
 
