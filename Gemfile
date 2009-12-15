@@ -1,5 +1,6 @@
 only :release do
   gem 'haml', '~> 2.0'
+  gem 'nokogiri'
 end
 
 only :development do
