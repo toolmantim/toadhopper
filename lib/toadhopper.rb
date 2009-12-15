@@ -18,16 +18,12 @@ module ToadHopper
       @api_key = api_key
     end
     
-    # Sets patterns to [FILTER] out sensitive data such as passwords, emails and credit card numbers.
-    #
-    #   Toadhopper::Dispatcher.new('apikey').filters = /password/, /email/, /credit_card_number/
+    # Sets patterns to +[FILTER]+ out sensitive data such as +/password/+, +/email/+ and +/credit_card_number/+
     def filters=(*filters)
       @filters = filters.flatten
     end
 
-    # Filters for the Dispatcher
-    #
-    # @return [Regexp]
+    # @private
     def filters
       [@filters].flatten.compact
     end
