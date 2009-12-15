@@ -4,11 +4,11 @@ Toadhopper can be used to report plain old Ruby exceptions, or to build a framew
 
     require 'toadhopper'
 
-    dispatcher = ToadHopper::Dispatcher.new("YOURAPIKEY")
+    toadhopper = ToadHopper.new("YOURAPIKEY")
 
     error = begin; raise "Kaboom!"; rescue => e; e; end
 
-    puts dispatcher.post!(error)
+    puts toadhopper.post!(error)
 
 You can install it via rubygems:
 
