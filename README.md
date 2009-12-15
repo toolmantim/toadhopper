@@ -4,7 +4,7 @@ Toadhopper can be used to report plain old Ruby exceptions, or to build a framew
 
     require 'toadhopper'
 
-    dispatcher = Toadhopper::Dispatcher.new("YOURAPIKEY")
+    dispatcher = ToadHopper::Dispatcher.new("YOURAPIKEY")
 
     error = begin; raise "Kaboom!"; rescue => e; e; end
 
