@@ -82,7 +82,7 @@ module ToadHopper
       locals = {
         :error            => exception,
         :api_key          => api_key,
-        :environment      => scrub_environment(ENV.to_hash),
+        :environment      => clean(ENV.to_hash),
         :backtrace        => exception.backtrace.map {|l| backtrace_line(l)},
         :url              => 'http://localhost/',
         :component        => 'http://localhost/',
@@ -107,36 +107,25 @@ module ToadHopper
     end
 
     # @private
-    def filter(hash)
-      hash.inject({}) do |acc, (key, val)|
-        acc[key] = filter?(key) ? "[FILTERED]" : val
-      acc
+    def clean(hash)
+      hash.inject({}) do |acc, (k, v)|
+        acc[k] = (v.is_a?(Hash) ? clean(v) : filtered_value(k,v)) if serializable?(v)
+        acc
       end
     end
 
     # @private
-    def filter?(key)
-      filters.any? do |filter|
-        key.to_s =~ Regexp.new(filter)
-      end
-    end
-
-    # @private
-    def scrub_environment(hash)
-      filter(clean_non_serializable_data(hash))
-    end
-
-    # @private
-    def clean_non_serializable_data(data)
-      data.select{|k,v| serializable?(v) }.inject({}) do |h, pair|
-        h[pair.first] = pair.last.is_a?(Hash) ? clean_non_serializable_data(pair.last) : pair.last
-        h
+    def filtered_value(key, value)
+      if filters.any? {|f| key.to_s =~ Regexp.new(f)}
+        "[FILTERED]"
+      else
+        value
       end
     end
 
     # @private
     def serializable?(value)
-      [Fixnum, Array, String, Hash, Bignum].any? {|c| v.is_a?(c)}
+      [Fixnum, Array, String, Hash, Bignum].any? {|c| value.is_a?(c)}
     end
   end
 end
