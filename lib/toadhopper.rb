@@ -136,11 +136,7 @@ module ToadHopper
 
     # @private
     def serializable?(value)
-      value.is_a?(Fixnum) ||
-      value.is_a?(Array) ||
-      value.is_a?(String) ||
-      value.is_a?(Hash) ||
-      value.is_a?(Bignum)
+      [Fixnum, Array, String, Hash, Bignum].any? {|c| v.is_a?(c)}
     end
   end
 end
