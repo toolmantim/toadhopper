@@ -38,6 +38,7 @@ module ToadHopper
     #   request          An object that response to #params and returns a hash
     #   notifier_name    Say you're a different notifier than ToadHopper
     #   notifier_version Specify the version of your custom notifier
+    #   notifier_url     Specify the project URL of your custom notifier
     #   session          A hash of the user session in a web request
     #   framework_env    The framework environment your app is running under
     #   backtrace        Normally not needed, parsed automatically from the provided exception parameter
@@ -89,6 +90,7 @@ module ToadHopper
         :request          => nil,
         :notifier_name    => 'ToadHopper',
         :notifier_version => '0.8',
+        :notifier_url     => 'http://github.com/toolmantim/toadhopper',
         :session          => {},
         :framework_env    => ENV['RACK_ENV'] || 'development',
         :project_root     => Dir.pwd
