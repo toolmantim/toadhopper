@@ -2,13 +2,12 @@ A base library for [Hoptoad](http://www.hoptoadapp.com/) error reporting.
 
 Toadhopper can be used to report plain old Ruby exceptions, or to build a framework-specific gem such as [toadhopper-sinatra](http://github.com/toolmantim/toadhopper-sinatra).
 
-    require 'toadhopper'
-
-    toadhopper = ToadHopper.new("YOURAPIKEY")
-
-    error = begin; raise "Kaboom!"; rescue => e; e; end
-
-    puts toadhopper.post!(error)
+    begin
+      raise "Kaboom!"
+    rescue  => e
+      require 'toadhopper'
+      ToadHopper.new("YOURAPIKEY").post!(e)
+    end
 
 You can install it via rubygems:
 
