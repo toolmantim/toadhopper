@@ -5,7 +5,7 @@ require 'nokogiri'
 
 # Posts errors to the Hoptoad API
 class ToadHopper
-  VERSION = "0.9.1"
+  VERSION = "0.9.2"
 
   # Hoptoad API response
   class Response < Struct.new(:status, :body, :errors); end
@@ -15,7 +15,7 @@ class ToadHopper
   def initialize(api_key)
     @api_key = api_key
   end
-  
+
   # Sets patterns to +[FILTER]+ out sensitive data such as +/password/+, +/email/+ and +/credit_card_number/+
   def filters=(*filters)
     @filters = filters.flatten
@@ -94,14 +94,14 @@ class ToadHopper
       :project_root     => Dir.pwd
     }.merge(options)
 
-    Haml::Engine.new(notice_template).render(Object.new, defaults)
+    Haml::Engine.new(notice_template, :escape_html => true).render(Object.new, defaults)
   end
-  
+
   # @private
   def backtrace_line(line)
     Struct.new(:file, :number, :method).new(*line.match(%r{^([^:]+):(\d+)(?::in `([^']+)')?$}).captures)
   end
-  
+
   # @private
   def notice_template
     File.read(::File.join(::File.dirname(__FILE__), 'notice.haml'))
