@@ -2,7 +2,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), 'helper'))
 
 class ToadHopper::TestFilters < Test::Unit::TestCase
   def toadhopper
-    @toadhopper ||= ToadHopper.new("test api key")
+    @toadhopper ||= ToadHopper("test api key")
   end
   
   def test_no_filters

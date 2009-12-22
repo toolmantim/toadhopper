@@ -6,7 +6,7 @@ Toadhopper can be used to report plain old Ruby exceptions, or to build a framew
       raise "Kaboom!"
     rescue  => e
       require 'toadhopper'
-      ToadHopper.new("YOURAPIKEY").post!(e)
+      ToadHopper("YOURAPIKEY").post!(e)
     end
 
 You can install it via rubygems:

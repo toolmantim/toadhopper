@@ -2,7 +2,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), 'helper'))
 
 class ToadHopper::TestPosting < Test::Unit::TestCase
   def test_posting
-    toadhopper = ToadHopper.new("abc123")
+    toadhopper = ToadHopper("abc123")
     error = begin; raise "Kaboom!"; rescue => e; e end
 
     response = toadhopper.post!(error)
@@ -12,7 +12,7 @@ class ToadHopper::TestPosting < Test::Unit::TestCase
 
   if ENV['HOPTOAD_API_KEY']
     def test_posting_integration
-      toadhopper = ToadHopper.new(ENV['HOPTOAD_API_KEY'])
+      toadhopper = ToadHopper(ENV['HOPTOAD_API_KEY'])
       error = begin; raise "Kaboom!"; rescue => e; e end
 
       response = toadhopper.post!(error)

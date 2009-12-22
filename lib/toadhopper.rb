@@ -47,9 +47,9 @@ class ToadHopper
   # @param [Hash] http_headers extra HTTP headers to be sent in the post to the API
   #
   # @example
-  #   Toadhopper.new('apikey').post! error,
-  #                                  {:action => 'show', :controller => 'Users'},
-  #                                  {'X-Hoptoad-Client-Name' => 'My Awesome Notifier'}
+  #   ToadHopper('apikey').post! error,
+  #                              {:action => 'show', :controller => 'Users'},
+  #                              {'X-Hoptoad-Client-Name' => 'My Awesome Notifier'}
   #
   # @return [Response]
   def post!(error, options={}, http_headers={})
@@ -128,4 +128,11 @@ class ToadHopper
   def serializable?(value)
     [Fixnum, Array, String, Hash, Bignum].any? {|c| value.is_a?(c)}
   end
+end
+
+# Convenience method for creating ToadHoppers
+#
+# @return [ToadHopper]
+def ToadHopper(api_key)
+  ToadHopper.new(api_key)
 end
