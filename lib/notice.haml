@@ -10,7 +10,7 @@
     %message= "#{error.class.name}: #{error.message}"
     %backtrace
       - backtrace.each do |line|
-        %line{:method => line.method, :file => line.file, :number => line.number}
+        %line{:method => line.method, :file => line.file, :number => line.number}/
   %request
     %url= url
     %component= component
