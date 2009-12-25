@@ -1,30 +1,33 @@
-require 'rubygems'
 require 'rake/gempackagetask'
 require 'rubygems/specification'
 require 'spec/rake/spectask'
 require 'date'
 require 'bundler'
 
+Bundler.require_env
+
+require 'lib/rack/hoptoad'
+
 GEM = "rack_hoptoad"
-GEM_VERSION = "0.1.1"
+GEM_VERSION = Rack::Hoptoad::VERSION
 AUTHOR = "Corey Donohoe"
 EMAIL = "atmos@atmos.org"
 HOMEPAGE = "http://github.com/atmos/rack_hoptoad"
 SUMMARY = "A gem that provides hoptoad notifications from rack"
 
 spec = Gem::Specification.new do |s|
-  s.name = GEM
-  s.version = GEM_VERSION
-  s.platform = Gem::Platform::RUBY
-  s.has_rdoc = true
+  s.name             = GEM
+  s.version          = GEM_VERSION
+  s.platform         = Gem::Platform::RUBY
+  s.has_rdoc         = true
   s.extra_rdoc_files = ["LICENSE", 'TODO']
-  s.summary = SUMMARY
-  s.description = s.summary
-  s.author = AUTHOR
-  s.email = EMAIL
-  s.homepage = HOMEPAGE
+  s.summary          = SUMMARY
+  s.description      = s.summary
+  s.author           = AUTHOR
+  s.email            = EMAIL
+  s.homepage         = HOMEPAGE
 
-  manifest = Bundler::Environment.load(File.dirname(__FILE__) + '/Gemfile')
+  manifest = Bundler::Dsl.load_gemfile(File.dirname(__FILE__) + '/Gemfile')
   manifest.dependencies.each do |d|
     next unless d.only && d.only.include?('release')
     s.add_dependency(d.name, d.version)

@@ -13,15 +13,22 @@ Throw something like this in your config.ru to enable notifications.
 
 You can also exclude certain sensitive environmental variables using the block syntax
 
-    require 'rack/hoptoad'
-
     use Rack::Hoptoad, 'fd48c7d26f724503a0280f808f44b339fc65fab8' do |notifier|
       notifier.environment_filters << %w(MY_SECRET_KEY MY_SECRET_TOKEN)
     end
 
+If you want to post exceptions in an environment other than staging or production(the defaults)
 
-If your RACK_ENV variable is set to production or staging it'll actually post
-to hoptoad.  It won't process in the other environments.
+    use Rack::Hoptoad, 'fd48c7d26f724503a0280f808f44b339fc65fab8' do |notifier|
+      notifier.report_under << 'custom'
+    end
+
+If you want to use an environmental variable other than RACK_ENV and still have it post
+
+    use Rack::Hoptoad, 'fd48c7d26f724503a0280f808f44b339fc65fab8', 'MERB_ENV' do |notifier|
+      notifier.report_under        << 'custom'
+      notifier.environment_filters << %w(MY_SECRET_KEY MY_SECRET_TOKEN)
+    end
 
 Installation
 ============
