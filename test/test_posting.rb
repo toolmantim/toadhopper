@@ -13,6 +13,7 @@ class ToadHopper::TestPosting < Test::Unit::TestCase
   if ENV['HOPTOAD_API_KEY']
     def test_posting_integration
       toadhopper = ToadHopper(ENV['HOPTOAD_API_KEY'])
+      toadhopper.filters = "HOPTOAD_API_KEY", "ROOT_PASSWORD"
       error = begin; raise "Kaboom!"; rescue => e; e end
 
       response = toadhopper.post!(error)

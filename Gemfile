@@ -12,4 +12,5 @@ only :test do
   gem 'rake'
   gem 'nokogiri'
   gem 'test-unit', :require_as => 'test/unit'
+  gem 'ruby-debug'
 end
