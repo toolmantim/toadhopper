@@ -2,7 +2,6 @@ require File.expand_path(File.join(File.dirname(__FILE__), 'helper'))
 
 class ToadHopper::TestPosting < Test::Unit::TestCase
   def test_posting
-    toadhopper = ToadHopper("abc123")
     error = begin; raise "Kaboom!"; rescue => e; e end
 
     response = toadhopper.post!(error)

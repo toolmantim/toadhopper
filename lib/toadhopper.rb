@@ -78,10 +78,14 @@ class ToadHopper
 
   # @private
   def document_for(exception, options={})
+    Haml::Engine.new(notice_template, :escape_html => true).render(Object.new, filtered_data(exception, options))
+  end
+
+  def filtered_data(exception, options)
     defaults = {
       :error            => exception,
       :api_key          => api_key,
-      :environment      => clean(ENV.to_hash),
+      :environment      => ENV.to_hash,
       :backtrace        => exception.backtrace.map {|l| backtrace_line(l)},
       :url              => 'http://localhost/',
       :component        => 'http://localhost/',
@@ -94,7 +98,13 @@ class ToadHopper
       :project_root     => Dir.pwd
     }.merge(options)
 
-    Haml::Engine.new(notice_template, :escape_html => true).render(Object.new, defaults)
+    # Filter session and environment
+    [:session, :environment].each{|n| defaults[n] = clean(defaults[n]) if defaults[n] }
+
+    # Filter params
+    defaults[:request].params = clean(defaults[:request].params) if defaults[:request] && defaults[:request].params
+
+    defaults
   end
 
   # @private
