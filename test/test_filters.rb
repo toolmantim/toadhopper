@@ -26,12 +26,23 @@ class ToadHopper::TestFilters < Test::Unit::TestCase
 end
 
 class ToadHopper::TestCleanedOptions < Test::Unit::TestCase
-  def test_filtering_params
-    request = Struct.new(:params).new
-    request.params = {:password => "foo"}
-    error = begin; raise "Kaboom!"; rescue => e; e end
-
+  def setup
+    @request = Struct.new(:params).new
+    @request.params = {:password => "foo"}
+    def @request.params=(*); raise NoMethodError, "requests don't have #params=, you fool"; end
+    @error = begin; raise "Kaboom!"; rescue => e; e end
     toadhopper.filters = "password"
-    assert_equal({:password => "[FILTERED]"}, toadhopper.filtered_data(error, :request => request)[:request].params)
+  end
+
+  def test_filtering_params_with_backwards_compatibility
+    filtered_data = toadhopper.filtered_data(@error, :request => @request)[:params]
+
+    assert_equal({:password => "[FILTERED]"}, filtered_data)
+  end
+
+  def test_filtering_params
+    filtered_data = toadhopper.filtered_data(@error, :params => @request.params)[:params]
+
+    assert_equal({:password => "[FILTERED]"}, filtered_data)
   end
 end

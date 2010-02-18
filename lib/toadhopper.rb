@@ -92,6 +92,7 @@ class ToadHopper
       :component        => 'http://localhost/',
       :action           => nil,
       :request          => nil,
+      :params           => nil,
       :notifier_version => VERSION,
       :notifier_url     => 'http://github.com/toolmantim/toadhopper',
       :session          => {},
@@ -99,11 +100,11 @@ class ToadHopper
       :project_root     => Dir.pwd
     }.merge(options)
 
-    # Filter session and environment
-    [:session, :environment].each{|n| defaults[n] = clean(defaults[n]) if defaults[n] }
+    # Backwards compatibility
+    defaults[:params] ||= defaults[:request].params if defaults[:request]
 
-    # Filter params
-    defaults[:request].params = clean(defaults[:request].params) if defaults[:request] && defaults[:request].params
+    # Filter params, session and environment
+    [:params, :session, :environment].each{|n| defaults[n] = clean(defaults[n]) if defaults[n] }
 
     defaults
   end

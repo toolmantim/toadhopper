@@ -21,9 +21,9 @@
     <%- if action =~ /\S/ -%>
     <action><%=h action %></action>
     <%- end -%>
-    <%- if request && request.params.any? -%>
+    <%- if params && params.any? -%>
     <params>
-      <%- request.params.each do |key,value| -%>
+      <%- params.each do |key, value| -%>
       <var key="<%=h key %>"><%=h value %></var>
       <%- end -%>
     </params>
