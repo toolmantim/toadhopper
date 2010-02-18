@@ -1,16 +1,18 @@
-only :release do
-  gem 'haml', '~> 2.0'
+source :gemcutter
+
+group :runtime do
+  gem 'haml', '~> 2.2.0'
   gem 'nokogiri'
 end
 
-only :development do
+group :development do
   gem 'yard'
   gem 'jeweler'
 end
 
-only :test do
+group :test do
   gem 'rake'
   gem 'nokogiri'
-  gem 'test-unit', :require_as => 'test/unit'
+  gem 'test-unit', :require => 'test/unit'
   gem 'ruby-debug'
 end

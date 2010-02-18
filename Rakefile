@@ -1,4 +1,5 @@
-Bundler.require_env(:development)
+Bundler.setup(:runtime, :development, :test)
+Bundler.require(:runtime, :development, :test)
 
 require 'rake/testtask'
 
@@ -13,7 +14,7 @@ Jeweler::Tasks.new do |s|
   s.summary  = "Post error notifications to Hoptoad"
   s.email    = "t.lucas@toolmantim.com"
   s.homepage = "http://github.com/toolmantim/toadhopper"
-  s.authors  = ["Tim Lucas", "Samuel Tesla", "Corey Donohoe"]
+  s.authors  = ["Tim Lucas", "Samuel Tesla", "Corey Donohoe", "Andre Arko"]
   s.extra_rdoc_files  = ["README.md", "LICENSE"]
   s.executables = nil # stops jeweler automatically adding bin/*
 
@@ -21,8 +22,8 @@ Jeweler::Tasks.new do |s|
   s.version  = ToadHopper::VERSION
 
   require 'bundler'
-  bundler_env = Bundler::Dsl.load_gemfile(File.dirname(__FILE__) + '/Gemfile')
-  bundler_env.dependencies.each do |d|
-    s.add_dependency(d.name, d.version) if d.in?(:release)
-  end
+  bundle = Bundler::Definition.from_gemfile("Gemfile")
+  bundle.dependencies.
+    select { |d| d.groups.include?(:runtime) }.
+    each   { |d| s.add_dependency(d.name, d.version_requirements.to_s)  }
 end
