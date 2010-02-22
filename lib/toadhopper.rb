@@ -1,7 +1,6 @@
 require 'net/http'
 require 'haml'
 require 'haml/engine'
-require 'nokogiri'
 
 # Posts errors to the Hoptoad API
 class ToadHopper
@@ -69,7 +68,7 @@ class ToadHopper
                              {'Content-type' => 'text/xml', 'Accept' => 'text/xml, application/xml'}.merge(headers)
         Response.new response.code.to_i,
                      response.body,
-                     Nokogiri::XML.parse(response.body).xpath('//errors/error').map {|e| e.content}
+                     response.body.scan(%r{<error>(.+)<\/error>}).flatten
       rescue TimeoutError => e
         Response.new(500, '', ['Timeout error'])
       end
