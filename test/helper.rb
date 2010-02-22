@@ -1,5 +1,5 @@
-Bundler.setup(:runtime, :test)
-Bundler.require(:runtime, :test)
+Bundler.setup(:test)
+Bundler.require(:test)
 
 require File.expand_path("../../lib/toadhopper", __FILE__)
 

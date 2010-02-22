@@ -1,9 +1,5 @@
 source :gemcutter
 
-group :runtime do
-  gem 'haml', '~> 2.2.0'
-end
-
 group :development do
   gem 'yard'
   gem 'jeweler'

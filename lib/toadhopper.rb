@@ -1,6 +1,6 @@
 require 'net/http'
-require 'haml'
-require 'haml/engine'
+require 'erb'
+require 'ostruct'
 
 # Posts errors to the Hoptoad API
 class ToadHopper
@@ -77,7 +77,9 @@ class ToadHopper
 
   # @private
   def document_for(exception, options={})
-    Haml::Engine.new(notice_template, :escape_html => true).render(Object.new, filtered_data(exception, options))
+    data = filtered_data(exception, options)
+    scope = OpenStruct.new(data).extend(ERB::Util)
+    ERB.new(notice_template, nil, '-').result(scope.send(:binding))
   end
 
   def filtered_data(exception, options)
@@ -113,7 +115,7 @@ class ToadHopper
 
   # @private
   def notice_template
-    File.read(::File.join(::File.dirname(__FILE__), 'notice.haml'))
+    File.read(::File.join(::File.dirname(__FILE__), 'notice.xml.erb'))
   end
 
   # @private

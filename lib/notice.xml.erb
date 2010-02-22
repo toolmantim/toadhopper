@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<notice version="2.0.18">
+  <api-key><%=h api_key %></api-key>
+  <notifier>
+    <name><%=h notifier_name %></name>
+    <version><%=h notifier_version %></version>
+    <url><%=h notifier_url %></url>
+  </notifier>
+  <error>
+    <class><%=h error.class.name %></class>
+    <message><%=h "#{error.class.name}: #{error.message}" %></message>
+    <backtrace>
+      <%- backtrace.each do |line| -%>
+      <line file="<%=h line.file %>" method="<%=h line.method %>" number="<%=h line.number %>" />
+      <%- end -%>
+    </backtrace>
+  </error>
+  <request>
+    <url><%=h url %></url>
+    <component><%=h component %></component>
+    <%- if action =~ /\S/ -%>
+    <action><%=h action %></action>
+    <%- end -%>
+    <%- if request && request.params.any? -%>
+    <params>
+      <%- request.params.each do |key,value| -%>
+      <var key="<%=h key %>"><%=h value %></var>
+      <%- end -%>
+    </params>
+    <%- end -%>
+    <%- if session && session.any? -%>
+    <session>
+      <%- session.each do |key, value| -%>
+      <var key="<%=h key %>"><%=h value %></var>
+      <%- end -%>
+    </session>
+    <%- end -%>
+    <%- if environment && environment.any? -%>
+    <cgi-data>
+      <%- environment.each do |key,value| -%>
+      <var key="<%=h key %>"><%=h value %></var>
+      <%- end -%>
+    </cgi-data>
+    <%- end -%>
+  </request>
+  <server-environment>
+    <project-root><%=h project_root %></project-root>
+    <environment-name><%=h framework_env %></environment-name>
+  </server-environment>
+</notice>

@@ -1,5 +1,5 @@
-Bundler.setup(:runtime, :development, :test)
-Bundler.require(:runtime, :development, :test)
+Bundler.setup(:development, :test)
+Bundler.require(:development, :test)
 
 require 'rake/testtask'
 
