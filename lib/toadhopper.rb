@@ -82,12 +82,12 @@ class ToadHopper
     ERB.new(notice_template, nil, '-').result(scope.send(:binding))
   end
 
-  def filtered_data(exception, options)
+  def filtered_data(error, options)
     defaults = {
-      :error            => exception,
+      :error            => error,
       :api_key          => api_key,
       :environment      => ENV.to_hash,
-      :backtrace        => exception.backtrace.map {|l| backtrace_line(l)},
+      :backtrace        => error.backtrace.map {|l| backtrace_line(l)},
       :url              => 'http://localhost/',
       :component        => 'http://localhost/',
       :action           => nil,
