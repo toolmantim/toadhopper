@@ -6,3 +6,7 @@ require File.expand_path("../../lib/toadhopper", __FILE__)
 def toadhopper
   @toadhopper ||= ToadHopper.new(ENV['HOPTOAD_API_KEY'] || "test api key")
 end
+
+def error
+  begin; raise "Kaboom!"; rescue => e; e end
+end

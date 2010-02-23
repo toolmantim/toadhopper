@@ -77,13 +77,13 @@ class ToadHopper
 
   # @private
   def document_for(exception, options={})
-    data = filtered_data(exception, options)
+    data = document_data(exception, options)
     scope = OpenStruct.new(data).extend(ERB::Util)
     ERB.new(notice_template, nil, '-').result(scope.send(:binding))
   end
 
-  def filtered_data(error, options)
-    defaults = {
+  def document_defaults(error)
+    {
       :error            => error,
       :api_key          => api_key,
       :environment      => ENV.to_hash,
@@ -98,15 +98,13 @@ class ToadHopper
       :session          => {},
       :framework_env    => ENV['RACK_ENV'] || 'development',
       :project_root     => Dir.pwd
-    }.merge(options)
+    }
+  end
 
-    # Backwards compatibility
-    defaults[:params] ||= defaults[:request].params if defaults[:request]
-
-    # Filter params, session and environment
-    [:params, :session, :environment].each{|n| defaults[n] = clean(defaults[n]) if defaults[n] }
-
-    defaults
+  def document_data(error, options)
+    data = document_defaults(error).merge(options)
+    [:params, :session, :environment].each{|n| data[n] = clean(data[n]) if data[n] }
+    data
   end
 
   # @private
