@@ -7,5 +7,5 @@ end
 
 group :test do
   gem 'rake'
-  gem 'test-unit', :require => 'test/unit'
+  gem 'test-unit', :require => nil
 end
