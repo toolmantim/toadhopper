@@ -30,6 +30,10 @@ To generate the docs:
 
     % bundle exec yardoc
 
+To build the gem:
+
+    % bundle exec rake build
+
 ## Contributors
 
 * [Tim Lucas](http://github.com/toolmantim)
