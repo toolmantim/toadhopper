@@ -24,6 +24,6 @@ Jeweler::Tasks.new do |s|
   require 'bundler'
   bundle = Bundler::Definition.from_gemfile("Gemfile")
   bundle.dependencies.
-    select { |d| d.groups.include?(:runtime) }.
+    select { |d| d.groups.include?(:default) || d.groups.include?(:runtime) }.
     each   { |d| s.add_dependency(d.name, d.version_requirements.to_s)  }
 end
