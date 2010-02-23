@@ -3,7 +3,7 @@ require 'erb'
 require 'ostruct'
 
 # Posts errors to the Hoptoad API
-class ToadHopper
+class Toadhopper
   VERSION = "0.9.8"
 
   # Hoptoad API response
@@ -34,7 +34,7 @@ class ToadHopper
   # @option options [String]  component        Normally this is your Controller name in an MVC framework
   # @option options [String]  action           Normally the action for your request in an MVC framework
   # @option options [Hash]    params           A hash of the request's parameters
-  # @option options [String]  notifier_name    Say you're a different notifier than ToadHopper
+  # @option options [String]  notifier_name    Say you're a different notifier than Toadhopper
   # @option options [String]  notifier_version Specify the version of your custom notifier
   # @option options [String]  notifier_url     Specify the project URL of your custom notifier
   # @option options [Hash]    session          A hash of the user session in a web request
@@ -46,13 +46,13 @@ class ToadHopper
   # @param [Hash] http_headers extra HTTP headers to be sent in the post to the API
   #
   # @example
-  #   ToadHopper('apikey').post! error,
+  #   Toadhopper('apikey').post! error,
   #                              {:action => 'show', :controller => 'Users'},
   #                              {'X-Hoptoad-Client-Name' => 'My Awesome Notifier'}
   #
   # @return [Response]
   def post!(error, options={}, http_headers={})
-    options[:notifier_name] ||= 'ToadHopper'
+    options[:notifier_name] ||= 'Toadhopper'
     post_document(document_for(error, options), {'X-Hoptoad-Client-Name' => options[:notifier_name]})
   end
 
@@ -140,9 +140,9 @@ class ToadHopper
   end
 end
 
-# Convenience method for creating ToadHoppers
+# Convenience method for creating Toadhoppers
 #
-# @return [ToadHopper]
-def ToadHopper(api_key)
-  ToadHopper.new(api_key)
+# @return [Toadhopper]
+def Toadhopper(api_key)
+  Toadhopper.new(api_key)
 end

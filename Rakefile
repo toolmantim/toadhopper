@@ -19,7 +19,7 @@ Jeweler::Tasks.new do |s|
   s.executables = nil # stops jeweler automatically adding bin/*
 
   require File.join(File.dirname(__FILE__), 'lib', 'toadhopper')
-  s.version  = ToadHopper::VERSION
+  s.version  = Toadhopper::VERSION
 
   require 'bundler'
   bundle = Bundler::Definition.from_gemfile("Gemfile")

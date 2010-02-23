@@ -1,6 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), 'helper'))
 
-class ToadHopper::TestNoticeDocument < Test::Unit::TestCase
+class Toadhopper::TestNoticeDocument < Test::Unit::TestCase
   def test_filtering
     toadhopper.filters = "password"
     sensitive_options = {

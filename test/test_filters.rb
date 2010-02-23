@@ -1,6 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), 'helper'))
 
-class ToadHopper::TestFilters < Test::Unit::TestCase
+class Toadhopper::TestFilters < Test::Unit::TestCase
   def test_no_filters
     assert_equal(                {:id => "myid", :password => "mypassword"},
                  toadhopper.clean(:id => "myid", :password => "mypassword"))

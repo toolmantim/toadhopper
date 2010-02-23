@@ -1,8 +1,8 @@
 require File.expand_path(File.join(File.dirname(__FILE__), 'helper'))
 
-class ToadHopper::TestPosting < Test::Unit::TestCase
+class Toadhopper::TestPosting < Test::Unit::TestCase
   def test_posting
-    response = ToadHopper('bogus key').post!(error)
+    response = Toadhopper('bogus key').post!(error)
     assert_equal 422, response.status
     assert_equal ['No project exists with the given API key.'], response.errors
   end
