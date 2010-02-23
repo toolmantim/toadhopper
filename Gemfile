@@ -3,6 +3,7 @@ source :gemcutter
 group :development do
   gem 'yard'
   gem 'jeweler'
+  gem 'rake'
 end
 
 group :test do
