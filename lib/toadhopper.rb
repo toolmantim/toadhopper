@@ -116,7 +116,7 @@ class ToadHopper
 
   # @private
   def notice_template
-    File.read(::File.join(::File.dirname(__FILE__), 'notice.xml.erb'))
+    File.read(::File.join(::File.dirname(__FILE__), 'notice.erb'))
   end
 
   # @private
