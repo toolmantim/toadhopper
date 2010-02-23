@@ -33,7 +33,7 @@ class ToadHopper
   # @option options [String]  url              The url for the request, required to post but not useful in a console environment
   # @option options [String]  component        Normally this is your Controller name in an MVC framework
   # @option options [String]  action           Normally the action for your request in an MVC framework
-  # @option options [#params] request          An object that response to #params and returns a hash
+  # @option options [Hash]    params           A hash of the request's parameters
   # @option options [String]  notifier_name    Say you're a different notifier than ToadHopper
   # @option options [String]  notifier_version Specify the version of your custom notifier
   # @option options [String]  notifier_url     Specify the project URL of your custom notifier
