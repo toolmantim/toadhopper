@@ -4,7 +4,7 @@ require 'ostruct'
 
 # Posts errors to the Hoptoad API
 class Toadhopper
-  VERSION = "1.0.1"
+  VERSION = "1.0.2"
 
   # Hoptoad API response
   class Response < Struct.new(:status, :body, :errors); end
