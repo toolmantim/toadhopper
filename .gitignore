@@ -1,6 +1,6 @@
-/pkg
-/.yardoc
-/vendor
-/bin
-/doc
-/toadhopper.gemspec
+pkg
+.yardoc
+doc
+toadhopper.gemspec
+coverage
+.bundle

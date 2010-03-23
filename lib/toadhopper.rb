@@ -4,7 +4,7 @@ require 'ostruct'
 
 # Posts errors to the Hoptoad API
 class Toadhopper
-  VERSION = "1.0.0"
+  VERSION = "1.0.1"
 
   # Hoptoad API response
   class Response < Struct.new(:status, :body, :errors); end
@@ -79,7 +79,7 @@ class Toadhopper
   def document_for(exception, options={})
     data = document_data(exception, options)
     scope = OpenStruct.new(data).extend(ERB::Util)
-    ERB.new(notice_template, nil, '-').result(scope.send(:binding))
+    scope.instance_eval ERB.new(notice_template, nil, '-').src
   end
 
   def document_defaults(error)
