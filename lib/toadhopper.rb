@@ -109,7 +109,7 @@ class Toadhopper
 
   # @private
   def backtrace_line(line)
-    Struct.new(:file, :number, :method).new(*line.match(%r{^([^:]+):(\d+)(?::in `([^']+)')?$}).captures)
+    Struct.new(:file, :number, :method).new(*line.match(%r{^(.+):(\d+)(?::in `([^']+)')?$}).captures)
   end
 
   # @private
