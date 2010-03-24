@@ -20,11 +20,6 @@ class Toadhopper
     @filters = filters.flatten
   end
 
-  # @private
-  def filters
-    [@filters].flatten.compact
-  end
-
   # Posts an exception to hoptoad.
   #
   # @param [Exception] error the error to post
@@ -56,32 +51,6 @@ class Toadhopper
     post_document(document_for(error, options), {'X-Hoptoad-Client-Name' => options[:notifier_name]})
   end
 
-  # @private
-  def post_document(document, headers={})
-    uri = URI.parse("http://hoptoadapp.com:80/notifier_api/v2/notices")
-    Net::HTTP.start(uri.host, uri.port) do |http|
-      http.read_timeout = 5 # seconds
-      http.open_timeout = 2 # seconds
-      begin
-        response = http.post uri.path,
-                             document,
-                             {'Content-type' => 'text/xml', 'Accept' => 'text/xml, application/xml'}.merge(headers)
-        Response.new response.code.to_i,
-                     response.body,
-                     response.body.scan(%r{<error>(.+)<\/error>}).flatten
-      rescue TimeoutError => e
-        Response.new(500, '', ['Timeout error'])
-      end
-    end
-  end
-
-  # @private
-  def document_for(exception, options={})
-    data = document_data(exception, options)
-    scope = OpenStruct.new(data).extend(ERB::Util)
-    scope.instance_eval ERB.new(notice_template, nil, '-').src
-  end
-
   def document_defaults(error)
     {
       :error            => error,
@@ -107,17 +76,44 @@ class Toadhopper
     data
   end
 
-  # @private
+  private
+
+  def filters
+    [@filters].flatten.compact
+  end
+
+  def post_document(document, headers={})
+    uri = URI.parse("http://hoptoadapp.com:80/notifier_api/v2/notices")
+    Net::HTTP.start(uri.host, uri.port) do |http|
+      http.read_timeout = 5 # seconds
+      http.open_timeout = 2 # seconds
+      begin
+        response = http.post uri.path,
+                             document,
+                             {'Content-type' => 'text/xml', 'Accept' => 'text/xml, application/xml'}.merge(headers)
+        Response.new response.code.to_i,
+                     response.body,
+                     response.body.scan(%r{<error>(.+)<\/error>}).flatten
+      rescue TimeoutError => e
+        Response.new(500, '', ['Timeout error'])
+      end
+    end
+  end
+
+  def document_for(exception, options={})
+    data = document_data(exception, options)
+    scope = OpenStruct.new(data).extend(ERB::Util)
+    scope.instance_eval ERB.new(notice_template, nil, '-').src
+  end
+
   def backtrace_line(line)
     Struct.new(:file, :number, :method).new(*line.match(%r{^(.+):(\d+)(?::in `([^']+)')?$}).captures)
   end
 
-  # @private
   def notice_template
     File.read(::File.join(::File.dirname(__FILE__), 'notice.erb'))
   end
 
-  # @private
   def clean(hash)
     hash.inject({}) do |acc, (k, v)|
       acc[k] = (v.is_a?(Hash) ? clean(v) : filtered_value(k,v)) if serializable?(v)
@@ -125,7 +121,6 @@ class Toadhopper
     end
   end
 
-  # @private
   def filtered_value(key, value)
     if filters.any? {|f| key.to_s =~ Regexp.new(f)}
       "[FILTERED]"
@@ -134,7 +129,6 @@ class Toadhopper
     end
   end
 
-  # @private
   def serializable?(value)
     [Fixnum, Array, String, Hash, Bignum].any? {|c| value.is_a?(c)}
   end
