@@ -52,6 +52,8 @@ class Toadhopper
     post_document(document_for(error, options), {'X-Hoptoad-Client-Name' => options[:notifier_name]})
   end
 
+  private
+
   def document_defaults(error)
     {
       :error            => error,
@@ -76,8 +78,6 @@ class Toadhopper
     [:params, :session, :environment].each{|n| data[n] = clean(data[n]) if data[n] }
     data
   end
-
-  private
 
   def filters
     [@filters].flatten.compact
