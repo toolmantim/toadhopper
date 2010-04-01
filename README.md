@@ -38,5 +38,6 @@ To build the gem:
 
 * [Tim Lucas](http://github.com/toolmantim)
 * [Samuel Tesla](http://github.com/stesla)
-* [atmos](http://github.com/atmos)
-* [indirect](http://github.com/indirect)
+* [Corey Donohoe](http://github.com/atmos)
+* [Andre Arko](http://github.com/indirect)
+* [Loren Segal](http://github.com/lsegal)
