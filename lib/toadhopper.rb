@@ -5,6 +5,7 @@ require 'ostruct'
 # Posts errors to the Hoptoad API
 class Toadhopper
   VERSION = "1.0.3"
+  FILTER_REPLACEMENT = "[FILTERED]"
 
   # Hoptoad API response
   class Response < Struct.new(:status, :body, :errors); end
@@ -123,7 +124,7 @@ class Toadhopper
 
   def filtered_value(key, value)
     if filters.any? {|f| key.to_s =~ Regexp.new(f)}
-      "[FILTERED]"
+      FILTER_REPLACEMENT
     else
       value
     end
