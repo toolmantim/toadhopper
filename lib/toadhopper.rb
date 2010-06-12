@@ -59,7 +59,7 @@ class Toadhopper
       :error            => error,
       :api_key          => api_key,
       :environment      => ENV.to_hash,
-      :backtrace        => error.backtrace.map {|l| backtrace_line(l)},
+      :backtrace        => backtrace_for(error),
       :url              => 'http://localhost/',
       :component        => 'http://localhost/',
       :action           => nil,
@@ -107,8 +107,22 @@ class Toadhopper
     scope.instance_eval ERB.new(notice_template, nil, '-').src
   end
 
+  BacktraceLine = Struct.new(:file, :number, :method)
+
+  def backtrace_for(error)
+    lines = Array(error.backtrace).map {|l| backtrace_line(l)}
+    if lines.empty?
+      lines << BacktraceLine.new("no-backtrace", "1", nil)
+    end
+    lines
+  end
+
   def backtrace_line(line)
-    Struct.new(:file, :number, :method).new(*line.match(%r{^(.+):(\d+)(?::in `([^']+)')?$}).captures)
+    if match = line.match(%r{^(.+):(\d+)(?::in `([^']+)')?$})
+      BacktraceLine.new(*match.captures)
+    else
+      BacktraceLine.new(line, "1", nil)
+    end
   end
 
   def notice_template
