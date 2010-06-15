@@ -4,7 +4,7 @@ require 'ostruct'
 
 # Posts errors to the Hoptoad API
 class Toadhopper
-  VERSION = "1.0.4"
+  VERSION = "1.0.5"
   FILTER_REPLACEMENT = "[FILTERED]"
 
   # Hoptoad API response
