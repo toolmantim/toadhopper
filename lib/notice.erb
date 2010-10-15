@@ -6,6 +6,10 @@
     <version><%=h notifier_version %></version>
     <url><%=h notifier_url %></url>
   </notifier>
+  <server-environment>
+    <project-root><%=h project_root %></project-root>
+    <environment-name><%=h framework_env %></environment-name>
+  </server-environment>
   <error>
     <class><%=h error.class.name %></class>
     <message><%=h "#{error.class.name}: #{error.message}" %></message>
@@ -43,8 +47,4 @@
     </cgi-data>
     <%- end -%>
   </request>
-  <server-environment>
-    <project-root><%=h project_root %></project-root>
-    <environment-name><%=h framework_env %></environment-name>
-  </server-environment>
 </notice>
