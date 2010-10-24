@@ -20,10 +20,4 @@ Jeweler::Tasks.new do |s|
 
   require File.join(File.dirname(__FILE__), 'lib', 'toadhopper')
   s.version  = Toadhopper::VERSION
-
-  require 'bundler'
-  bundle = Bundler::Definition.from_gemfile("Gemfile")
-  bundle.dependencies.
-    select { |d| d.groups.include?(:default) || d.groups.include?(:runtime) }.
-    each   { |d| s.add_dependency(d.name, d.version_requirements.to_s)  }
 end
