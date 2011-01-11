@@ -55,7 +55,7 @@ class Toadhopper
   # Posts a deployment notification
   # 
   # @param [Hash] options
-  # @option options [String] framework_env  The framework environment your app is running under, required
+  # @option options [String] framework_env  The framework environment your app is running under, defaults to development
   # @option options [String] scm_repository The repository URL
   # @option options [String] scm_revision   The current repository revision
   # @option options [String] username       Your name, defaults to `whoami`

@@ -13,6 +13,20 @@ You can install it via rubygems:
 
     gem install toadhopper
 
+## Deploy tracking
+
+You can use Toadhopper to notify Hoptoad of deployments:
+
+    Toadhopper('YOURAPIKEY').deploy!
+    
+The method accepts options to set the environment, SCM revision, etc.
+
+There is Capistrano support for deploy tracking. Simply require `toadhopper/capistrano` in your deploy config and set the variable `hoptoad_api_key`:
+
+    require 'toadhopper/capistrano'
+    
+    set :hoptoad_api_key, 'YOURAPIKEY'
+
 ## Development
 
 Install Bundler 0.9.x, then:
@@ -41,3 +55,4 @@ To build the gem:
 * [Corey Donohoe](http://github.com/atmos)
 * [Andre Arko](http://github.com/indirect)
 * [Loren Segal](http://github.com/lsegal)
+* [Theo Hultberg](http://github.com/iconara)
