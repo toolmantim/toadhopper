@@ -52,6 +52,26 @@ class Toadhopper
     post_document(document_for(error, options), {'X-Hoptoad-Client-Name' => options[:notifier_name]})
   end
 
+  # Posts a deployment notification
+  # 
+  # @param [Hash] options
+  # @option options [String] framework_env  The framework environment your app is running under, required
+  # @option options [String] scm_repository The repository URL
+  # @option options [String] scm_revision   The current repository revision
+  # @option options [String] username       Your name, defaults to `whoami`
+  #
+  # @return [Response]
+  def deploy!(options={})
+    params = {}
+    params['api_key'] = @api_key
+    params['deploy[rails_env]'] = options[:framework_env] || 'development'
+    params['deploy[local_username]'] = options[:username] || %x(whoami).strip
+    params['deploy[scm_repository]'] = options[:scm_repository]
+    params['deploy[scm_revision]'] = options[:scm_revision]
+    response = Net::HTTP.post_form(URI.parse('http://hoptoadapp.com/deploys.txt'), params)
+    parse_response(response)
+  end
+
   private
 
   def document_defaults(error)
@@ -92,13 +112,17 @@ class Toadhopper
         response = http.post uri.path,
                              document,
                              {'Content-type' => 'text/xml', 'Accept' => 'text/xml, application/xml'}.merge(headers)
-        Response.new response.code.to_i,
-                     response.body,
-                     response.body.scan(%r{<error>(.+)<\/error>}).flatten
+        parse_response(response)
       rescue TimeoutError => e
         Response.new(500, '', ['Timeout error'])
       end
     end
+  end
+  
+  def parse_response(response)
+    Response.new(response.code.to_i,
+                 response.body,
+                 response.body.scan(%r{<error>(.+)<\/error>}).flatten)
   end
 
   def document_for(exception, options={})

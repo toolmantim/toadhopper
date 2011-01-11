@@ -9,4 +9,5 @@ end
 group :test do
   gem 'rake'
   gem 'test-unit', :require => nil
+  gem 'fakeweb'
 end
