@@ -1,6 +1,5 @@
 pkg
 .yardoc
 doc
-toadhopper.gemspec
 coverage
 .bundle

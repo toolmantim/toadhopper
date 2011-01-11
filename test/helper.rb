@@ -1,6 +1,4 @@
-Bundler.setup(:test)
-Bundler.require(:test)
-
+require 'bundler/setup'
 require 'test/unit'
 require 'fakeweb'
 require 'toadhopper'
