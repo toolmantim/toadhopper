@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    toadhopper (1.0.6)
+    toadhopper (1.1)
 
 GEM
   remote: http://rubygems.org/
