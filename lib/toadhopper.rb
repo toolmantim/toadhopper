@@ -53,7 +53,7 @@ class Toadhopper
   end
 
   # Posts a deployment notification
-  # 
+  #
   # @param [Hash] options
   # @option options [String] framework_env  The framework environment your app is running under, defaults to development
   # @option options [String] scm_repository The repository URL
@@ -118,7 +118,7 @@ class Toadhopper
       end
     end
   end
-  
+
   def parse_response(response)
     Response.new(response.code.to_i,
                  response.body,
@@ -155,7 +155,7 @@ class Toadhopper
 
   def clean(hash)
     hash.inject({}) do |acc, (k, v)|
-      acc[k] = (v.is_a?(Hash) ? clean(v) : filtered_value(k,v)) if serializable?(v)
+      acc[k] = (v.is_a?(Hash) ? clean(v) : filtered_value(k,v))
       acc
     end
   end
@@ -166,10 +166,6 @@ class Toadhopper
     else
       value
     end
-  end
-
-  def serializable?(value)
-    [Fixnum, Array, String, Hash, Bignum].any? {|c| value.is_a?(c)}
   end
 end
 
