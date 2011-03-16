@@ -9,8 +9,8 @@ class Toadhopper::TestFiltering < Test::Unit::TestCase
     assert_filtered "sensitive", /sit/
   end
 
-  def test_not_cleaning_time_value
-    time = Time.mktime(2011, 03, 15)
+  def test_converting_values_to_string
+    time = Time.mktime(2011, 03, 15).to_s
     assert_equal({:time => time}, toadhopper.send(:clean, :time => time))
   end
 

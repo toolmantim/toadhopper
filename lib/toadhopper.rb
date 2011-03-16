@@ -164,7 +164,7 @@ class Toadhopper
     if filters.any? {|f| key.to_s =~ Regexp.new(f)}
       FILTER_REPLACEMENT
     else
-      value
+      value.to_s
     end
   end
 end
