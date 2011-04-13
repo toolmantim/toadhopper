@@ -13,9 +13,10 @@ class Toadhopper
   attr_reader :api_key
 
   def initialize(api_key, params = {})
-    @api_key    = api_key
-    @error_url  = params.delete(:error_url)  || "http://hoptoadapp.com:80/notifier_api/v2/notices"
-    @deploy_url = params.delete(:deploy_url) || "http://hoptoadapp.com/deploys.txt"
+    @api_key     = api_key
+    @notify_host = params.delete(:notify_host) || "http://hoptoadapp.com"
+    @error_url   = params.delete(:error_url)   || "#{@notify_host}/notifier_api/v2/notices"
+    @deploy_url  = params.delete(:deploy_url)  || "#{@notify_host}/deploys.txt"
   end
 
   # Sets patterns to +[FILTER]+ out sensitive data such as +/password/+, +/email/+ and +/credit_card_number/+
