@@ -12,8 +12,10 @@ class Toadhopper
 
   attr_reader :api_key
 
-  def initialize(api_key)
-    @api_key = api_key
+  def initialize(api_key, params = {})
+    @api_key    = api_key
+    @error_url  = params.delete(:error_url)  || "http://hoptoadapp.com:80/notifier_api/v2/notices"
+    @deploy_url = params.delete(:deploy_url) || "http://hoptoadapp.com/deploys.txt"
   end
 
   # Sets patterns to +[FILTER]+ out sensitive data such as +/password/+, +/email/+ and +/credit_card_number/+
@@ -68,7 +70,7 @@ class Toadhopper
     params['deploy[local_username]'] = options[:username] || %x(whoami).strip
     params['deploy[scm_repository]'] = options[:scm_repository]
     params['deploy[scm_revision]'] = options[:scm_revision]
-    response = Net::HTTP.post_form(URI.parse('http://hoptoadapp.com/deploys.txt'), params)
+    response = Net::HTTP.post_form(URI.parse(@deploy_url), params)
     parse_response(response)
   end
 
@@ -104,7 +106,7 @@ class Toadhopper
   end
 
   def post_document(document, headers={})
-    uri = URI.parse("http://hoptoadapp.com:80/notifier_api/v2/notices")
+    uri = URI.parse(@error_url)
     Net::HTTP.start(uri.host, uri.port) do |http|
       http.read_timeout = 5 # seconds
       http.open_timeout = 2 # seconds
