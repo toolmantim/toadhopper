@@ -6,7 +6,7 @@ require 'toadhopper'
 FakeWeb.allow_net_connect = true
 
 def toadhopper
-  @toadhopper ||= Toadhopper.new(ENV['HOPTOAD_API_KEY'] || "test api key")
+  @toadhopper ||= Toadhopper.new(ENV['AIRBRAKE_API_KEY'] || ENV['HOPTOAD_API_KEY'] || "test api key")
 end
 
 def error

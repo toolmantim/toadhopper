@@ -12,8 +12,8 @@ Gem::Specification.new do |s|
   s.authors     = ['Tim Lucas', 'Samuel Tesla', 'Corey Donohoe', 'Andre Arko', 'Theo Hultberg']
   s.email       = ['t.lucas@toolmantim.com']
   s.homepage    = 'http://github.com/toolmantim/toadhopper'
-  s.summary     = %q{Post error notifications to Hoptoad}
-  s.description = %q{A base library for Hoptoad error reporting}
+  s.summary     = %q{Post error notifications to Airbrake}
+  s.description = %q{A base library for Airbrake error reporting}
 
   s.rubyforge_project = 'toadhopper'
 

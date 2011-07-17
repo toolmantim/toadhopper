@@ -1,4 +1,4 @@
-A base library for [Hoptoad](http://www.hoptoadapp.com/) error reporting.
+A base library for [Airbrake](http://www.airbrakeapp.com/) error reporting.
 
 Toadhopper can be used to report plain old Ruby exceptions, or to build a framework-specific gem such as [toadhopper-sinatra](http://github.com/toolmantim/toadhopper-sinatra).
 
@@ -15,17 +15,17 @@ You can install it via rubygems:
 
 ## Deploy tracking
 
-You can use Toadhopper to notify Hoptoad of deployments:
+You can use Toadhopper to notify Airbrake of deployments:
 
     Toadhopper('YOURAPIKEY').deploy!
     
 The method accepts options to set the environment, SCM revision, etc.
 
-There is Capistrano support for deploy tracking. Simply require `toadhopper/capistrano` in your deploy config and set the variable `hoptoad_api_key`:
+There is Capistrano support for deploy tracking. Simply require `toadhopper/capistrano` in your deploy config and set the variable `airbrake_api_key`:
 
     require 'toadhopper/capistrano'
     
-    set :hoptoad_api_key, 'YOURAPIKEY'
+    set :airbrake_api_key, 'YOURAPIKEY'
 
 ## Development
 
@@ -36,9 +36,9 @@ Install Bundler 0.9.x, then:
     % bundle install
     % bundle exec rake test
 
-If you set a `HOPTOAD_API_KEY` environment variable it'll test actually posting to the Hoptoad API. For example:
+If you set a `AIRBRAKE_API_KEY` environment variable it'll test actually posting to the Airbrake API. For example:
 
-    % bundle exec rake test HOPTOAD_API_KEY=abc123
+    % bundle exec rake test AIRBRAKE_API_KEY=abc123
 
 To generate the docs:
 

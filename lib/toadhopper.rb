@@ -2,19 +2,19 @@ require 'net/http'
 require 'erb'
 require 'ostruct'
 
-# Posts errors to the Hoptoad API
+# Posts errors to the Airbrake API
 class Toadhopper
   VERSION = "1.3"
   FILTER_REPLACEMENT = "[FILTERED]"
 
-  # Hoptoad API response
+  # Airbrake API response
   class Response < Struct.new(:status, :body, :errors); end
 
   attr_reader :api_key
 
   def initialize(api_key, params = {})
     @api_key     = api_key
-    @notify_host = params.delete(:notify_host) || "http://hoptoadapp.com"
+    @notify_host = params.delete(:notify_host) || "http://airbrakeapp.com"
     @error_url   = params.delete(:error_url)   || "#{@notify_host}/notifier_api/v2/notices"
     @deploy_url  = params.delete(:deploy_url)  || "#{@notify_host}/deploys.txt"
   end
@@ -24,7 +24,7 @@ class Toadhopper
     @filters = filters.flatten
   end
 
-  # Posts an exception to hoptoad.
+  # Posts an exception to Airbrake.
   #
   # @param [Exception] error the error to post
   #
@@ -47,12 +47,12 @@ class Toadhopper
   # @example
   #   Toadhopper('apikey').post! error,
   #                              {:action => 'show', :controller => 'Users'},
-  #                              {'X-Hoptoad-Client-Name' => 'My Awesome Notifier'}
+  #                              {'X-Airbrake-Client-Name' => 'My Awesome Notifier'}
   #
   # @return [Response]
   def post!(error, options={}, http_headers={})
     options[:notifier_name] ||= 'Toadhopper'
-    post_document(document_for(error, options), {'X-Hoptoad-Client-Name' => options[:notifier_name]})
+    post_document(document_for(error, options), {'X-Airbrake-Client-Name' => options[:notifier_name]})
   end
 
   # Posts a deployment notification
