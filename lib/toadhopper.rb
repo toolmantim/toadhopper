@@ -14,7 +14,7 @@ class Toadhopper
 
   def initialize(api_key, params = {})
     @api_key     = api_key
-    @notify_host = params.delete(:notify_host) || "http://hoptoadapp.com"
+    @notify_host = params.delete(:notify_host) || "http://airbrakeapp.com"
     @error_url   = params.delete(:error_url)   || "#{@notify_host}/notifier_api/v2/notices"
     @deploy_url  = params.delete(:deploy_url)  || "#{@notify_host}/deploys.txt"
   end

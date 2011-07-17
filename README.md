@@ -1,4 +1,4 @@
-A base library for [Hoptoad](http://www.hoptoadapp.com/) error reporting.
+A base library for [Airbrake](http://airbrakeapp.com) (formerly [Hoptoad](http://robots.thoughtbot.com/post/7665411707/hoptoad-is-now-airbrake)) error reporting.
 
 Toadhopper can be used to report plain old Ruby exceptions, or to build a framework-specific gem such as [toadhopper-sinatra](http://github.com/toolmantim/toadhopper-sinatra).
 

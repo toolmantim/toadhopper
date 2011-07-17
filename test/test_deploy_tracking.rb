@@ -4,7 +4,7 @@ require 'fakeweb'
 
 class Toadhopper::TestDeployTracking < Test::Unit::TestCase
   def test_deploy
-    FakeWeb.register_uri(:post, 'http://hoptoadapp.com/deploys.txt', :status => ['200', 'Ok'])
+    FakeWeb.register_uri(:post, 'http://airbrakeapp.com/deploys.txt', :status => ['200', 'Ok'])
     options = {:framework_env => 'test', :scm_revision => 3, :scm_repository => 'some/where', :username => 'phil'}
     response = Toadhopper('bogus key').deploy!(options)
     request = FakeWeb.last_request
