@@ -56,3 +56,4 @@ To build the gem:
 * [Andre Arko](http://github.com/indirect)
 * [Loren Segal](http://github.com/lsegal)
 * [Theo Hultberg](http://github.com/iconara)
+* [Ben Klang](http://github.com/bklang)
