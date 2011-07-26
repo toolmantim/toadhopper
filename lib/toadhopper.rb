@@ -4,7 +4,7 @@ require 'ostruct'
 
 # Posts errors to the Airbrake API
 class Toadhopper
-  VERSION = "1.3"
+  VERSION = "2.0"
   FILTER_REPLACEMENT = "[FILTERED]"
 
   # Airbrake API response

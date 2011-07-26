@@ -4,7 +4,6 @@ $: << File.expand_path('../lib', __FILE__)
 
 require 'toadhopper'
 
-
 Gem::Specification.new do |s|
   s.name        = 'toadhopper'
   s.version     = Toadhopper::VERSION
