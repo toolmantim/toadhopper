@@ -1,6 +1,7 @@
 require 'net/http'
 require 'erb'
 require 'ostruct'
+require 'toadhopper_exception'
 
 # Posts errors to the Airbrake API
 class Toadhopper
@@ -10,11 +11,17 @@ class Toadhopper
   # Airbrake API response
   class Response < Struct.new(:status, :body, :errors); end
 
-  attr_reader :api_key
+  attr_reader :api_key, :notify_host
 
   def initialize(api_key, params = {})
+    secure = params.delete(:secure)
+    if secure and params[:notify_host]
+      raise ToadhopperException, 'You cannot specify :secure and :notify_host options at the same time.'
+    end
+    scheme = secure ? 'https' : 'http'
+
     @api_key     = api_key
-    @notify_host = params.delete(:notify_host) || "http://airbrakeapp.com"
+    @notify_host = params.delete(:notify_host) || "#{scheme}://airbrakeapp.com"
     @error_url   = params.delete(:error_url)   || "#{@notify_host}/notifier_api/v2/notices"
     @deploy_url  = params.delete(:deploy_url)  || "#{@notify_host}/deploys.txt"
   end
@@ -108,7 +115,7 @@ class Toadhopper
 
   def post_document(document, headers={})
     uri = URI.parse(@error_url)
-    Net::HTTP.start(uri.host, uri.port) do |http|
+    Net::HTTP.start(uri.host, uri.port, :use_ssl => 'https' == uri.scheme) do |http|
       http.read_timeout = 5 # seconds
       http.open_timeout = 2 # seconds
       begin

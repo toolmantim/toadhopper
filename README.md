@@ -13,6 +13,20 @@ You can install it via rubygems:
 
     gem install toadhopper
 
+## SSL
+
+Toadhopper can transport your messages over SSL.
+
+In order to enable SSL, just add the `:secure` option.
+
+    Toadhopper.new("YOURAPIKEY", :secure => true).post!(e)
+
+Alternatively, you can specify a `:notify_host` with a https:// protocol.
+
+    Toadhopper.new("YOURAPIKEY", :notify_host => 'https://airbrakeapp.com').post!(e)
+
+_Note: You must have a paid plan for Airbrake to accept your messages over SSL._
+
 ## Deploy tracking
 
 You can use Toadhopper to notify Airbrake of deployments:
@@ -39,6 +53,12 @@ Install Bundler 0.9.x, then:
 If you set a `AIRBRAKE_API_KEY` environment variable it'll test actually posting to the Airbrake API. For example:
 
     % bundle exec rake test AIRBRAKE_API_KEY=abc123
+
+Set SECURE=1 to test posting over SSL. For example:
+
+    % bundle exec rake test AIRBRAKE_API_KEY=abc123 SECURE=1
+
+_Note: You must have a paid plan for Airbrake to accept your messages over SSL._
 
 To generate the docs:
 
