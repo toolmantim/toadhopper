@@ -1,3 +1,5 @@
+[![Build Status](https://secure.travis-ci.org/toolmantim/toadhopper.png)](http://travis-ci.org/toolmantim/toadhopper)
+
 A base library for [Airbrake](http://www.airbrakeapp.com/) error reporting.
 
 Toadhopper can be used to report plain old Ruby exceptions, or to build a framework-specific gem such as [toadhopper-sinatra](http://github.com/toolmantim/toadhopper-sinatra).
