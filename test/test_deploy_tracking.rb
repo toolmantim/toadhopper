@@ -23,7 +23,8 @@ class Toadhopper::TestDeployTracking < Test::Unit::TestCase
     assert_equal 403, response.status, response
     expected_error = 'could not find a project with API key'
     assert_match expected_error, response.body, response
-    assert_equal [], response.errors, response # @TODO populate the error here
+    assert_equal 1, response.errors.size, response
+    assert_match expected_error, response.errors.first, response
   end
 
   if ENV['AIRBRAKE_API_KEY'] and not ENV['SECURE'] # @TODO Make deployments work under SSL

@@ -79,7 +79,7 @@ class Toadhopper
     params['deploy[scm_repository]'] = options[:scm_repository]
     params['deploy[scm_revision]'] = options[:scm_revision]
     response = Net::HTTP.post_form(URI.parse(@deploy_url), params)
-    parse_response(response)
+    parse_text_response(response)
   end
 
   private
@@ -120,17 +120,23 @@ class Toadhopper
         response = http.post uri.path,
                              document,
                              {'Content-type' => 'text/xml', 'Accept' => 'text/xml, application/xml'}.merge(headers)
-        parse_response(response)
+        parse_xml_response(response)
       rescue TimeoutError => e
         Response.new(500, '', ['Timeout error'])
       end
     end
   end
 
-  def parse_response(response)
+  def parse_xml_response(response)
     Response.new(response.code.to_i,
                  response.body,
                  response.body.scan(%r{<error>(.+)<\/error>}).flatten)
+  end
+
+  def parse_text_response(response)
+    errors = []
+    errors << response.body unless response.kind_of? Net::HTTPSuccess
+    Response.new(response.code.to_i, response.body, errors)
   end
 
   def document_for(exception, options={})
