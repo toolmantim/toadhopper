@@ -1,4 +1,4 @@
-require 'net/http'
+require 'net/https'
 require 'erb'
 require 'ostruct'
 require 'toadhopper_exception'
@@ -115,9 +115,7 @@ class Toadhopper
 
   def post_document(document, headers={})
     uri = URI.parse(@error_url)
-    Net::HTTP.start(uri.host, uri.port, :use_ssl => 'https' == uri.scheme) do |http|
-      http.read_timeout = 5 # seconds
-      http.open_timeout = 2 # seconds
+    connection(uri).start do |http|
       begin
         response = http.post uri.path,
                              document,
@@ -175,6 +173,42 @@ class Toadhopper
       FILTER_REPLACEMENT
     else
       value.to_s
+    end
+  end
+
+  # Initialize a new http connection
+  #
+  # MIT Licensing Note: Portions of logic below for connecting via SSL were
+  # copied from the airbrake project under the MIT License.
+  #
+  # @see https://github.com/airbrake/airbrake/blob/master/MIT-LICENSE
+  def connection(uri)
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.read_timeout = 5 # seconds
+    http.open_timeout = 2 # seconds
+    http.use_ssl = 'https' == uri.scheme
+    if http.use_ssl?
+      http.ca_file      = self.class.cert_path
+      http.verify_mode  = OpenSSL::SSL::VERIFY_PEER
+    end
+    http
+  end
+
+  class << self
+    def cert_path
+      if File.exist? OpenSSL::X509::DEFAULT_CERT_FILE
+        OpenSSL::X509::DEFAULT_CERT_FILE
+      else
+        local_cert_path
+      end
+    end
+
+    # Local certificate path, which was built from source
+    #
+    # @see https://github.com/toolmantim/toadhopper/blob/master/resources/README.md
+    def local_cert_path
+      relative_path = File.join('..', 'resources', 'ca-bundle.crt')
+      File.expand_path(relative_path, File.dirname(__FILE__))
     end
   end
 end
