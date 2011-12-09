@@ -96,3 +96,4 @@ To build the gem:
 * [Loren Segal](http://github.com/lsegal)
 * [Theo Hultberg](http://github.com/iconara)
 * [Ben Klang](http://github.com/bklang)
+* [Stephen George](https://github.com/sfgeorge)
