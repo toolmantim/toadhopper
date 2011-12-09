@@ -5,7 +5,7 @@ require 'toadhopper_exception'
 
 # Posts errors to the Airbrake API
 class Toadhopper
-  VERSION = "2.0"
+  VERSION = '2.1'
   FILTER_REPLACEMENT = "[FILTERED]"
 
   # Airbrake API response
