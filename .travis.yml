@@ -9,6 +9,6 @@ rvm:
 
 notifications:
   email:
-    - sgit-turtle.testudo12@wronghead.com
+    - sfgeorge-toadhopper-turtle.testudo12@wronghead.com
   irc:
     channels: "irc.freenode.org#toadhopper"
