@@ -78,8 +78,7 @@ class Toadhopper
     params['deploy[local_username]'] = options[:username] || %x(whoami).strip
     params['deploy[scm_repository]'] = options[:scm_repository]
     params['deploy[scm_revision]'] = options[:scm_revision]
-    response = Net::HTTP.post_form(URI.parse(@deploy_url), params)
-    parse_text_response(response)
+    response(URI.parse(@deploy_url), params)
   end
 
   private
@@ -115,15 +114,35 @@ class Toadhopper
 
   def post_document(document, headers={})
     uri = URI.parse(@error_url)
+    all_headers = {'Content-type' => 'text/xml', 'Accept' => 'text/xml, application/xml'}.merge(headers)
+    response(uri, document, all_headers)
+  end
+
+  def response(uri, data, headers=nil)
     connection(uri).start do |http|
       begin
-        response = http.post uri.path,
-                             document,
-                             {'Content-type' => 'text/xml', 'Accept' => 'text/xml, application/xml'}.merge(headers)
-        parse_xml_response(response)
+        # If data is Hash-like, we post it as a form
+        response = if data.respond_to? :has_key?
+          # Post url-encoded form data
+          request = Net::HTTP::Post.new(uri.path)
+          request.form_data = data
+          http.request(request)
+        else
+          # Post a basic body of data
+          http.post uri.path, data, headers
+        end
+        parse_response(response)
       rescue TimeoutError => e
         Response.new(500, '', ['Timeout error'])
       end
+    end
+  end
+
+  def parse_response(response)
+    if response.body.include? '<?xml'
+      parse_xml_response(response)
+    else
+      parse_text_response(response)
     end
   end
 

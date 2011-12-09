@@ -15,7 +15,7 @@ You can install it via rubygems:
 
     gem install toadhopper
 
-## SSL
+## Posting Notices Over SSL
 
 Toadhopper can transport your messages over SSL.
 
@@ -43,6 +43,10 @@ There is Capistrano support for deploy tracking. Simply require `toadhopper/capi
     
     set :airbrake_api_key, 'YOURAPIKEY'
 
+Set the variable `airbrake_secure` as well if you want deploy tracking over ssl:
+
+    set :airbrake_secure, true
+
 ## Compatibility
 
 Toadhopper is tested against and compatible with the following ruby platforms:
@@ -69,11 +73,11 @@ If you set a `AIRBRAKE_API_KEY` environment variable it'll test actually posting
 
     % bundle exec rake test AIRBRAKE_API_KEY=abc123
 
-Set SECURE=1 to test posting over SSL. For example:
+Set `AIRBRAKE_FULL_TEST` to test integration operations that require a paid Airbrake plan such as posting over SSL, deploy tracking, and github integration.  For example:
 
-    % bundle exec rake test AIRBRAKE_API_KEY=abc123 SECURE=1
+    % bundle exec rake test AIRBRAKE_API_KEY=abc123 AIRBRAKE_FULL_TEST=1
 
-_Note: You must have a paid plan for Airbrake to accept your messages over SSL._
+_Beware: Setting `AIRBRAKE_FULL_TEST` will record a bogus deployment in your Airbrake project and auto-resolve any pre-existing development errors._
 
 To generate the docs:
 
