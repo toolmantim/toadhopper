@@ -6,7 +6,7 @@ class Toadhopper::TestInitialization < Test::Unit::TestCase
   def test_no_params
     toad = Toadhopper.new MY_KEY
     assert_toad_behavior toad
-    assert_equal 'http://airbrakeapp.com', toad.notify_host
+    assert_equal 'http://airbrake.io', toad.notify_host
   end
 
   def test_https_host
@@ -19,7 +19,7 @@ class Toadhopper::TestInitialization < Test::Unit::TestCase
   def test_secure
     toad = Toadhopper.new MY_KEY, :secure => true
     assert_toad_behavior toad
-    assert_equal 'https://airbrakeapp.com', toad.notify_host
+    assert_equal 'https://airbrake.io', toad.notify_host
   end
 
   def test_secure_and_host_not_allowed
