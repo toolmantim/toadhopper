@@ -1,6 +1,6 @@
 [![Build Status](https://secure.travis-ci.org/toolmantim/toadhopper.png)](http://travis-ci.org/toolmantim/toadhopper)
 
-A base library for [Airbrake](http://www.airbrakeapp.com/) error reporting.
+A base library for [Airbrake](http://www.airbrake.io/) error reporting.
 
 Toadhopper can be used to report plain old Ruby exceptions, or to build a framework-specific gem such as [toadhopper-sinatra](http://github.com/toolmantim/toadhopper-sinatra).
 
@@ -25,7 +25,7 @@ In order to enable SSL, just add the `:secure` option.
 
 Alternatively, you can specify a `:notify_host` with a https:// protocol.
 
-    Toadhopper.new("YOURAPIKEY", :notify_host => 'https://airbrakeapp.com').post!(e)
+    Toadhopper.new("YOURAPIKEY", :notify_host => 'https://airbrake.io').post!(e)
 
 _Note: You must have a paid plan for Airbrake to accept your messages over SSL._
 

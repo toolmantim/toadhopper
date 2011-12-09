@@ -21,7 +21,7 @@ class Toadhopper
     scheme = secure ? 'https' : 'http'
 
     @api_key     = api_key
-    @notify_host = params.delete(:notify_host) || "#{scheme}://airbrakeapp.com"
+    @notify_host = params.delete(:notify_host) || "#{scheme}://airbrake.io"
     @error_url   = params.delete(:error_url)   || "#{@notify_host}/notifier_api/v2/notices"
     @deploy_url  = params.delete(:deploy_url)  || "#{@notify_host}/deploys.txt"
   end

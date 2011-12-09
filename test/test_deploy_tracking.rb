@@ -7,7 +7,7 @@ class Toadhopper::TestDeployTracking < Test::Unit::TestCase
 
   def test_deploy
     response_body = 'Recorded deploy of My Awesome App to test.'
-    FakeWeb.register_uri(:post, 'http://airbrakeapp.com/deploys.txt', :body => response_body, :status => ['200', 'Ok'])
+    FakeWeb.register_uri(:post, 'http://airbrake.io/deploys.txt', :body => response_body, :status => ['200', 'Ok'])
     response = Toadhopper(BOGUS_KEY).deploy!(options)
     # Check our request
     assert_equal expected_parameters, query_to_hash(FakeWeb.last_request.body)
@@ -19,7 +19,7 @@ class Toadhopper::TestDeployTracking < Test::Unit::TestCase
 
   def test_fake_secure_deploy
     response_body = 'Recorded deploy of Foo to test.'
-    FakeWeb.register_uri(:post, 'https://airbrakeapp.com/deploys.txt', :body => response_body, :status => ['200', 'OK'])
+    FakeWeb.register_uri(:post, 'https://airbrake.io/deploys.txt', :body => response_body, :status => ['200', 'OK'])
     response = Toadhopper.new(BOGUS_KEY, :secure => true).deploy!(options)
     # Check our request
     assert_equal expected_parameters, query_to_hash(FakeWeb.last_request.body)

@@ -4,7 +4,7 @@ class Toadhopper::TestPosting < Test::Unit::TestCase
   def test_mock_posting
     key = 'lolc@tz'
     response_body = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<notice/>"
-    FakeWeb.register_uri(:post, 'http://airbrakeapp.com/notifier_api/v2/notices', :body => response_body, :status => ['200', 'OK'])
+    FakeWeb.register_uri(:post, 'http://airbrake.io/notifier_api/v2/notices', :body => response_body, :status => ['200', 'OK'])
     response = Toadhopper(key).post!(error)
     # Check our request
     assert_match key, FakeWeb.last_request.body, FakeWeb.last_request.body
