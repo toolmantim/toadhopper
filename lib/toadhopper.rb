@@ -1,4 +1,4 @@
-require 'net/http'
+require 'net/https'
 require 'erb'
 require 'ostruct'
 require 'toadhopper_exception'
@@ -78,8 +78,7 @@ class Toadhopper
     params['deploy[local_username]'] = options[:username] || %x(whoami).strip
     params['deploy[scm_repository]'] = options[:scm_repository]
     params['deploy[scm_revision]'] = options[:scm_revision]
-    response = Net::HTTP.post_form(URI.parse(@deploy_url), params)
-    parse_response(response)
+    response(URI.parse(@deploy_url), params)
   end
 
   private
@@ -115,13 +114,23 @@ class Toadhopper
 
   def post_document(document, headers={})
     uri = URI.parse(@error_url)
-    Net::HTTP.start(uri.host, uri.port, :use_ssl => 'https' == uri.scheme) do |http|
-      http.read_timeout = 5 # seconds
-      http.open_timeout = 2 # seconds
+    all_headers = {'Content-type' => 'text/xml', 'Accept' => 'text/xml, application/xml'}.merge(headers)
+    response(uri, document, all_headers)
+  end
+
+  def response(uri, data, headers=nil)
+    connection(uri).start do |http|
       begin
-        response = http.post uri.path,
-                             document,
-                             {'Content-type' => 'text/xml', 'Accept' => 'text/xml, application/xml'}.merge(headers)
+        # If data is Hash-like, we post it as a form
+        response = if data.respond_to? :has_key?
+          # Post url-encoded form data
+          request = Net::HTTP::Post.new(uri.path)
+          request.form_data = data
+          http.request(request)
+        else
+          # Post a basic body of data
+          http.post uri.path, data, headers
+        end
         parse_response(response)
       rescue TimeoutError => e
         Response.new(500, '', ['Timeout error'])
@@ -130,9 +139,23 @@ class Toadhopper
   end
 
   def parse_response(response)
+    if response.body.include? '<?xml'
+      parse_xml_response(response)
+    else
+      parse_text_response(response)
+    end
+  end
+
+  def parse_xml_response(response)
     Response.new(response.code.to_i,
                  response.body,
                  response.body.scan(%r{<error>(.+)<\/error>}).flatten)
+  end
+
+  def parse_text_response(response)
+    errors = []
+    errors << response.body unless response.kind_of? Net::HTTPSuccess
+    Response.new(response.code.to_i, response.body, errors)
   end
 
   def document_for(exception, options={})
@@ -175,6 +198,42 @@ class Toadhopper
       FILTER_REPLACEMENT
     else
       value.to_s
+    end
+  end
+
+  # Initialize a new http connection
+  #
+  # MIT Licensing Note: Portions of logic below for connecting via SSL were
+  # copied from the airbrake project under the MIT License.
+  #
+  # @see https://github.com/airbrake/airbrake/blob/master/MIT-LICENSE
+  def connection(uri)
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.read_timeout = 5 # seconds
+    http.open_timeout = 2 # seconds
+    http.use_ssl = 'https' == uri.scheme
+    if http.use_ssl?
+      http.ca_file      = self.class.cert_path
+      http.verify_mode  = OpenSSL::SSL::VERIFY_PEER
+    end
+    http
+  end
+
+  class << self
+    def cert_path
+      if File.exist? OpenSSL::X509::DEFAULT_CERT_FILE
+        OpenSSL::X509::DEFAULT_CERT_FILE
+      else
+        local_cert_path
+      end
+    end
+
+    # Local certificate path, which was built from source
+    #
+    # @see https://github.com/toolmantim/toadhopper/blob/master/resources/README.md
+    def local_cert_path
+      relative_path = File.join('..', 'resources', 'ca-bundle.crt')
+      File.expand_path(relative_path, File.dirname(__FILE__))
     end
   end
 end
