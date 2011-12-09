@@ -55,9 +55,11 @@ Toadhopper is tested against and compatible with the following ruby platforms:
   * **1.9.2**
   * **1.9.3**
   * **ree 1.8.7-2011.03**
-  * **jruby 1.6.3**  
-    For jruby support, you need to `gem install jruby-openssl` if you do not
-    already have that gem. [More info on why this is.](http://blog.mattwynne.net/2011/04/26/targeting-multiple-platforms-jruby-etc-with-a-rubygems-gemspec/)
+  * **jruby 1.6.3**
+
+    For jruby support, you need to `gem install jruby-openssl` if you do not already have that gem.
+    [More info on why this is.](http://blog.mattwynne.net/2011/04/26/targeting-multiple-platforms-jruby-etc-with-a-rubygems-gemspec/)
+
   * **rubinius 2.0.testing** branch in ruby 1.8 mode (1.9 mode is not supported)
 
 ## Development
