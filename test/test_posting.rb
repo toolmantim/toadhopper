@@ -30,7 +30,7 @@ class Toadhopper::TestPosting < Test::Unit::TestCase
       response = toadhopper.post!(error)
       # Check how we capture the live response
       assert_equal 200, response.status, response
-      assert_match '</error-id>', response.body, response
+      assert_match '</id>', response.body, response
       assert_equal [], response.errors, response
     end
   end
