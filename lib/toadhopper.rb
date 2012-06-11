@@ -11,19 +11,27 @@ class Toadhopper
   # Airbrake API response
   class Response < Struct.new(:status, :body, :errors); end
 
-  attr_reader :api_key, :notify_host
+  attr_reader :api_key, :notify_host, :secure
 
   def initialize(api_key, params = {})
-    secure = params.delete(:secure)
-    if secure and params[:notify_host]
-      raise ToadhopperException, 'You cannot specify :secure and :notify_host options at the same time.'
-    end
-    scheme = secure ? 'https' : 'http'
+    @api_key      = api_key
 
-    @api_key     = api_key
-    @notify_host = params.delete(:notify_host) || "#{scheme}://airbrake.io"
-    @error_url   = params.delete(:error_url)   || "#{@notify_host}/notifier_api/v2/notices"
-    @deploy_url  = params.delete(:deploy_url)  || "#{@notify_host}/deploys.txt"
+    @notify_host  = URI.parse(params.delete(:notify_host) || 'http://airbrake.io')
+    @secure       = params.delete(:secure)
+    if @secure or @notify_host.scheme.eql? 'https'
+      @notify_host.scheme = 'https'
+      @secure = {} unless @secure.respond_to? :has_key?
+    end
+
+    @error_uri   = URI.parse(params.delete(:error_url)  || "#{@notify_host}/notifier_api/v2/notices")
+    @deploy_uri  = URI.parse(params.delete(:deploy_url) || "#{@notify_host}/deploys.txt")
+    validate!
+  end
+
+  def validate!
+    unless @notify_host.absolute?
+      raise ToadhopperException, ":notify_host #{@notify_host.inspect} must include an http(s):// protocol"
+    end
   end
 
   # Sets patterns to +[FILTER]+ out sensitive data such as +/password/+, +/email/+ and +/credit_card_number/+
@@ -78,7 +86,7 @@ class Toadhopper
     params['deploy[local_username]'] = options[:username] || %x(whoami).strip
     params['deploy[scm_repository]'] = options[:scm_repository]
     params['deploy[scm_revision]'] = options[:scm_revision]
-    response(URI.parse(@deploy_url), params)
+    response(@deploy_uri, params)
   end
 
   private
@@ -113,9 +121,8 @@ class Toadhopper
   end
 
   def post_document(document, headers={})
-    uri = URI.parse(@error_url)
     all_headers = {'Content-type' => 'text/xml', 'Accept' => 'text/xml, application/xml'}.merge(headers)
-    response(uri, document, all_headers)
+    response(@error_uri, document, all_headers)
   end
 
   def response(uri, data, headers=nil)
@@ -213,8 +220,8 @@ class Toadhopper
     http = Net::HTTP.new(uri.host, uri.port)
     http.read_timeout = 5 # seconds
     http.open_timeout = 2 # seconds
-    http.use_ssl = 'https' == uri.scheme
-    if http.use_ssl?
+    if @secure
+      http.use_ssl      = true
       http.ca_file      = self.class.cert_path
       http.verify_mode  = OpenSSL::SSL::VERIFY_PEER
     end
