@@ -154,7 +154,9 @@ class Toadhopper
 
   def parse_text_response(response)
     errors = []
-    errors << response.body unless response.kind_of? Net::HTTPSuccess
+    unless response.kind_of? Net::HTTPSuccess or response.body.to_s.empty?
+      errors << response.body
+    end
     Response.new(response.code.to_i, response.body, errors)
   end
 

@@ -19,8 +19,8 @@ class Toadhopper::TestPosting < Test::Unit::TestCase
     response = Toadhopper('bogus key').post!(error)
     # Check how we capture the live response
     assert_equal 422, response.status, response
-    assert_match '</error>', response.body, response
-    assert_equal ['No project exists with the given API key.'], response.errors, response
+    assert_respond_to response.errors, :each_with_index, response
+    assert_equal 1, response.errors.length, response
   end
 
   if ENV['AIRBRAKE_API_KEY']
