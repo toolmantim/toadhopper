@@ -11,26 +11,29 @@ class Toadhopper
   # Airbrake API response
   class Response < Struct.new(:status, :body, :errors); end
 
-  attr_reader :api_key, :notify_host, :secure
+  attr_reader :api_key, :error_url, :deploy_url, :secure
 
   def initialize(api_key, params = {})
-    @api_key      = api_key
+    @api_key    = api_key
 
-    @notify_host  = URI.parse(params.delete(:notify_host) || 'http://airbrake.io')
-    @secure       = params.delete(:secure)
-    if @secure or @notify_host.scheme.eql? 'https'
-      @notify_host.scheme = 'https'
+    notify_host = URI.parse(params.delete(:notify_host) || 'http://airbrake.io')
+    @secure     = params.delete(:secure)
+    if @secure or notify_host.scheme.eql? 'https'
+      notify_host.scheme = 'https'
       @secure = {} unless @secure.respond_to? :has_key?
     end
 
-    @error_uri   = URI.parse(params.delete(:error_url)  || "#{@notify_host}/notifier_api/v2/notices")
-    @deploy_uri  = URI.parse(params.delete(:deploy_url) || "#{@notify_host}/deploys.txt")
+    @error_url  = URI.parse(params.delete(:error_url)  || "#{notify_host}/notifier_api/v2/notices")
+    @deploy_url = URI.parse(params.delete(:deploy_url) || "#{notify_host}/deploys.txt")
     validate!
   end
 
   def validate!
-    unless @notify_host.absolute?
-      raise ToadhopperException, ":notify_host #{@notify_host.inspect} must include an http(s):// protocol"
+    unless @error_url.absolute?
+      raise ToadhopperException, ":error_url #{@error_url.inspect} must include an http(s):// protocol"
+    end
+    unless @deploy_url.absolute?
+      raise ToadhopperException, ":deploy_url #{@deploy_url.inspect} must include an http(s):// protocol"
     end
   end
 
@@ -86,7 +89,7 @@ class Toadhopper
     params['deploy[local_username]'] = options[:username] || %x(whoami).strip
     params['deploy[scm_repository]'] = options[:scm_repository]
     params['deploy[scm_revision]'] = options[:scm_revision]
-    response(@deploy_uri, params)
+    response(@deploy_url, params)
   end
 
   private
@@ -122,7 +125,7 @@ class Toadhopper
 
   def post_document(document, headers={})
     all_headers = {'Content-type' => 'text/xml', 'Accept' => 'text/xml, application/xml'}.merge(headers)
-    response(@error_uri, document, all_headers)
+    response(@error_url, document, all_headers)
   end
 
   def response(uri, data, headers=nil)
