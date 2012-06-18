@@ -13,7 +13,7 @@ def toadhopper
 end
 
 def toadhopper_args
-  ENV['AIRBRAKE_FULL_TEST'] ? {:secure => true} : {}
+  {}
 end
 
 def error

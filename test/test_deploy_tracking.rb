@@ -20,7 +20,7 @@ class Toadhopper::TestDeployTracking < Test::Unit::TestCase
   def test_fake_secure_deploy
     response_body = 'Recorded deploy of Foo to test.'
     FakeWeb.register_uri(:post, 'https://airbrake.io/deploys.txt', :body => response_body, :status => ['200', 'OK'])
-    response = Toadhopper.new(BOGUS_KEY, :secure => true).deploy!(options)
+    response = Toadhopper.new(BOGUS_KEY, :notify_host => 'https://airbrake.io').deploy!(options)
     # Check our request
     assert_equal expected_parameters, query_to_hash(FakeWeb.last_request.body)
     # Check how we capture the mock response

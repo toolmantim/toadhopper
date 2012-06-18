@@ -6,8 +6,8 @@ Changes since 2.0:
 
   * Added support for submitting errors and deployments over https.
   * All optional Toadhopper host settings are now exposed for Capistrano
-    deployments, including `:airbrake_secure`, `:airbrake_notify_host`,
-    `:airbrake_error_url`, and `:airbrake_deploy_url`.
+    deployments, including `:airbrake_notify_host`, `:airbrake_error_url`, and
+    `:airbrake_deploy_url`.
 
 ### Bugs
 

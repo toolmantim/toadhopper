@@ -11,18 +11,11 @@ class Toadhopper
   # Airbrake API response
   class Response < Struct.new(:status, :body, :errors); end
 
-  attr_reader :api_key, :error_url, :deploy_url, :secure
+  attr_reader :api_key, :error_url, :deploy_url
 
   def initialize(api_key, params = {})
     @api_key    = api_key
-
-    notify_host = URI.parse(params.delete(:notify_host) || 'http://airbrake.io')
-    @secure     = params.delete(:secure)
-    if @secure or notify_host.scheme.eql? 'https'
-      notify_host.scheme = 'https'
-      @secure = {} unless @secure.respond_to? :has_key?
-    end
-
+    notify_host = params.delete(:notify_host) || 'http://airbrake.io'
     @error_url  = URI.parse(params.delete(:error_url)  || "#{notify_host}/notifier_api/v2/notices")
     @deploy_url = URI.parse(params.delete(:deploy_url) || "#{notify_host}/deploys.txt")
     validate!
@@ -90,6 +83,10 @@ class Toadhopper
     params['deploy[scm_repository]'] = options[:scm_repository]
     params['deploy[scm_revision]'] = options[:scm_revision]
     response(@deploy_url, params)
+  end
+
+  def secure?
+    connection(@deploy_url).use_ssl? and connection(@error_url).use_ssl?
   end
 
   private
@@ -223,7 +220,7 @@ class Toadhopper
     http = Net::HTTP.new(uri.host, uri.port)
     http.read_timeout = 5 # seconds
     http.open_timeout = 2 # seconds
-    if @secure
+    if uri.scheme.eql? 'https'
       http.use_ssl      = true
       http.ca_file      = self.class.cert_path
       http.verify_mode  = OpenSSL::SSL::VERIFY_PEER

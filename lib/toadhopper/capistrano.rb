@@ -11,7 +11,6 @@ Capistrano::Configuration.instance(:must_exist).load do
       framework_env = fetch(:rails_env, fetch(:airbrake_env, 'production'))
       api_key = fetch(:hoptoad_api_key, nil) || fetch(:airbrake_api_key)
       host_options = {
-        :secure       => fetch(:airbrake_secure, false),
         :notify_host  => fetch(:airbrake_notify_host, nil),
         :error_url    => fetch(:airbrake_error_url, nil),
         :deploy_url   => fetch(:airbrake_deploy_url, nil),
