@@ -22,11 +22,14 @@ class Toadhopper
   end
 
   def validate!
-    unless @error_url.absolute?
-      raise ToadhopperException, ":error_url #{@error_url.inspect} must include an http(s):// protocol"
-    end
-    unless @deploy_url.absolute?
-      raise ToadhopperException, ":deploy_url #{@deploy_url.inspect} must include an http(s):// protocol"
+    validate_url! :error_url
+    validate_url! :deploy_url
+  end
+
+  def validate_url!(sym)
+    url = instance_variable_get '@'+sym.to_s
+    unless url.absolute?
+      raise ToadhopperException, "#{sym} #{url.inspect} must include an http(s):// protocol"
     end
   end
 
