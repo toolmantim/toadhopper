@@ -17,7 +17,7 @@ Changes since 2.0:
 
 ### Miscellaneous
 
-  * Changed default notification domain to airbrake.io.
+  * Changed default notification domain to airbrake.io.  Note: The official domain is api.airbrake.io, but has been touch-and-go.
   * toadhopper is now tested in a continuous integration environment, thanks to [travis-ci.org](http://travis-ci.org/).
     The build is currently
     [![Build Status](https://secure.travis-ci.org/toolmantim/toadhopper.png)](http://travis-ci.org/toolmantim/toadhopper)
