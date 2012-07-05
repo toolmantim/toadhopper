@@ -204,7 +204,7 @@ class Toadhopper
   end
 
   def parse_response(response)
-    if response.body.include? '<?xml'
+    if response.body.include? '</'
       parse_xml_response(response)
     else
       parse_text_response(response)

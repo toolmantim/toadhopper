@@ -36,6 +36,13 @@ def assert_valid_airbrake_xml(body)
   end
 end
 
+def successful_posting_response
+'<notice>
+<id>d87i3bc8-1854-f937-184b-e2d93711cad3</id>
+<url>http://airbrake.io/locate/d87i3bc8-1854-f937-184b-e2d93711cad3</url>
+</notice>'
+end
+
 def error
   begin; raise "Kaboom!"; rescue => e; e end
 end
