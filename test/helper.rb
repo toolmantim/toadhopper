@@ -9,11 +9,7 @@ def reset_test_env
 end
 
 def toadhopper
-  @toadhopper ||= Toadhopper.new(ENV['AIRBRAKE_API_KEY'] || ENV['HOPTOAD_API_KEY'] || "test api key", toadhopper_args)
-end
-
-def toadhopper_args
-  {}
+  @toadhopper ||= Toadhopper.new ENV['AIRBRAKE_API_KEY'] || ENV['HOPTOAD_API_KEY'] || "test api key"
 end
 
 def error

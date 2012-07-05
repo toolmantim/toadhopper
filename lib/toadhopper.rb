@@ -13,11 +13,29 @@ class Toadhopper
 
   attr_reader :api_key, :error_url, :deploy_url
 
+  # Initialize and configure a Toadhopper
+  #
+  # @param [String] Your api key
+  # @param [Hash] params [optional]
+  #
+  #   :notify_host - [String] The default host to use
+  #   :error_url   - [String] Absolute URL to use for error reporting
+  #   :deploy_url  - [String] Absolute URL to use for deploy tracking
+  #   :transport   - [Net::HTTP|Net::HTTP::Proxy] A customized Net::* object
   def initialize(api_key, params = {})
     @api_key    = api_key
-    notify_host = params.delete(:notify_host) || 'http://airbrake.io'
+
+    notify_host = URI.parse(params[:notify_host] || 'http://airbrake.io')
+    @transport  = params.delete :transport
+    if @transport and not params[:notify_host]
+      notify_host.scheme  = 'https' if @transport.use_ssl?
+      notify_host.host    = @transport.address
+      notify_host.port    = @transport.port
+    end
+
     @error_url  = URI.parse(params.delete(:error_url)  || "#{notify_host}/notifier_api/v2/notices")
     @deploy_url = URI.parse(params.delete(:deploy_url) || "#{notify_host}/deploys.txt")
+
     validate!
   end
 
@@ -29,7 +47,23 @@ class Toadhopper
   def validate_url!(sym)
     url = instance_variable_get '@'+sym.to_s
     unless url.absolute?
-      raise ToadhopperException, "#{sym} #{url.inspect} must include an http(s):// protocol"
+      raise ToadhopperException, "#{sym} #{url.inspect} must begin with http:// or https://"
+    end
+
+    if @transport
+      if @transport.use_ssl? != url.scheme.eql?('https')
+        raise ToadhopperException,
+          ":transport use_ssl? setting of #{@transport.use_ssl?.inspect} does not match" +
+          " #{sym} scheme #{url.scheme.inspect}"
+      elsif @transport.address != url.host
+        raise ToadhopperException,
+          ":transport hostname #{@transport.address.inspect} does not match" +
+          " #{sym} hostname #{url.host.inspect}"
+      elsif @transport.port != url.port
+        raise ToadhopperException,
+          ":transport port #{@transport.port.inspect} does not match" +
+          " #{sym} port #{url.port.inspect}"
+      end
     end
   end
 
@@ -90,6 +124,26 @@ class Toadhopper
 
   def secure?
     connection(@deploy_url).use_ssl? and connection(@error_url).use_ssl?
+  end
+
+  # Provider of the net transport used
+  #
+  # MIT Licensing Note: Portions of logic below for connecting via SSL were
+  # copied from the airbrake project under the MIT License.
+  #
+  # @see https://github.com/airbrake/airbrake/blob/master/MIT-LICENSE
+  def connection(uri)
+    return @transport if @transport
+
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.read_timeout = 5 # seconds
+    http.open_timeout = 2 # seconds
+    if uri.scheme.eql? 'https'
+      http.use_ssl      = true
+      http.ca_file      = self.class.cert_path
+      http.verify_mode  = OpenSSL::SSL::VERIFY_PEER
+    end
+    http
   end
 
   private
@@ -211,24 +265,6 @@ class Toadhopper
     else
       value.to_s
     end
-  end
-
-  # Initialize a new http connection
-  #
-  # MIT Licensing Note: Portions of logic below for connecting via SSL were
-  # copied from the airbrake project under the MIT License.
-  #
-  # @see https://github.com/airbrake/airbrake/blob/master/MIT-LICENSE
-  def connection(uri)
-    http = Net::HTTP.new(uri.host, uri.port)
-    http.read_timeout = 5 # seconds
-    http.open_timeout = 2 # seconds
-    if uri.scheme.eql? 'https'
-      http.use_ssl      = true
-      http.ca_file      = self.class.cert_path
-      http.verify_mode  = OpenSSL::SSL::VERIFY_PEER
-    end
-    http
   end
 
   class << self

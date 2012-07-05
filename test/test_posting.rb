@@ -23,6 +23,12 @@ class Toadhopper::TestPosting < Test::Unit::TestCase
     assert_equal 1, response.errors.length, response
   end
 
+  def test_posting_transport
+    FakeWeb.allow_net_connect = true
+    response = Toadhopper.new('bogus key', :transport => transport).post!(error)
+    assert_equal 1, response.errors.length, response
+  end
+
   if ENV['AIRBRAKE_API_KEY']
     def test_posting_integration
       FakeWeb.allow_net_connect = true
@@ -33,6 +39,13 @@ class Toadhopper::TestPosting < Test::Unit::TestCase
       assert_match '</id>', response.body, response
       assert_equal [], response.errors, response
     end
+  end
+
+  def transport
+    transport = Net::HTTP.new 'airbrake.io'
+    transport.read_timeout = 7 # seconds
+    transport.open_timeout = 7 # seconds
+    transport
   end
 
   # This method is called automatically after every test
