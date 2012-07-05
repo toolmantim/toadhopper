@@ -36,11 +36,15 @@ def assert_valid_airbrake_xml(body)
   end
 end
 
-def successful_posting_response
+def posting_response_good
 '<notice>
 <id>d87i3bc8-1854-f937-184b-e2d93711cad3</id>
 <url>http://airbrake.io/locate/d87i3bc8-1854-f937-184b-e2d93711cad3</url>
 </notice>'
+end
+
+def posting_response_bad_apikey
+  'We could not find a project with API key of foo.  Please double check your airbrake configuration.'
 end
 
 def error

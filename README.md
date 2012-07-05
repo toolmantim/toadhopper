@@ -21,7 +21,7 @@ Toadhopper can transport your messages over SSL.
 
 To enable SSL, just specify a `:notify_host` with a https:// protocol.
 
-Alternatively, control freaks can have Toadhopper use a customized Net::HTTP or Net::HTTP::Proxy to their liking with `:transport`.
+Alternatively, control freaks can use a customized Net::HTTP or Net::HTTP::Proxy to their liking with `:transport`.
 
     Toadhopper.new("YOURAPIKEY", :notify_host => 'https://airbrake.io').post!(e)
 
