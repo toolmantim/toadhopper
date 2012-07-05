@@ -40,10 +40,10 @@ class Toadhopper::TestDeployTracking < Test::Unit::TestCase
     assert_match expected_error, response.errors.first, response
   end
 
-  if ENV['AIRBRAKE_API_KEY'] and ENV['AIRBRAKE_FULL_TEST']
+  if toadhopper_api_key and ENV['AIRBRAKE_FULL_TEST']
     def test_deploy_integration_good_key
       FakeWeb.allow_net_connect = true
-      opts = {:scm_repository => 'git://github.com/toolmantim/toadhopper.git', :scm_revision => 'a4aa47e5146c5a4cf84d87654efe53934b99daad'}
+      opts = {:scm_repository => 'git://github.com/toolmantim/toadhopper.git', :scm_revision => '5e15028652023c98c70ac275b5f04bb368e04773'}
       response = toadhopper.deploy!(opts)
       # Check how we capture the live response
       assert_equal 200, response.status, response

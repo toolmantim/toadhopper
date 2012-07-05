@@ -23,8 +23,9 @@ class Toadhopper::TestFiltering < Test::Unit::TestCase
   end
 
   def filtered_document(key, value, filter)
-    toadhopper.filters = filter
+    toad = toadhopper
+    toad.filters = filter
     hash = {"nested" => {key => value}, key => value}
-    toadhopper.__send__(:document_for, error, {:params => hash, :session => hash, :environment => hash})
+    toad.__send__(:document_for, error, {:params => hash, :session => hash, :environment => hash})
   end
 end

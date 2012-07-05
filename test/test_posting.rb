@@ -29,11 +29,12 @@ class Toadhopper::TestPosting < Test::Unit::TestCase
     assert_equal 1, response.errors.length, response
   end
 
-  if ENV['AIRBRAKE_API_KEY']
+  if toadhopper_api_key
     def test_posting_integration
       FakeWeb.allow_net_connect = true
-      toadhopper.filters = "AIRBRAKE_API_KEY", "ROOT_PASSWORD"
-      response = toadhopper.post!(error)
+      toad = toadhopper
+      toad.filters = "AIRBRAKE_API_KEY", "ROOT_PASSWORD"
+      response = toad.post!(error)
       # Check how we capture the live response
       assert_equal 200, response.status, response
       assert_match '</id>', response.body, response

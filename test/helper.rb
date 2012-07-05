@@ -9,7 +9,16 @@ def reset_test_env
 end
 
 def toadhopper
-  @toadhopper ||= Toadhopper.new ENV['AIRBRAKE_API_KEY'] || ENV['HOPTOAD_API_KEY'] || "test api key"
+  api_key = toadhopper_api_key || 'test api key'
+  Toadhopper.new api_key, toadhopper_args
+end
+
+def toadhopper_api_key
+  ENV['AIRBRAKE_API_KEY'] || ENV['HOPTOAD_API_KEY']
+end
+
+def toadhopper_args
+  ENV['AIRBRAKE_FULL_TEST'] ? {:notify_host => 'https://airbrake.io'} : {}
 end
 
 def error
