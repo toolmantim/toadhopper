@@ -53,6 +53,10 @@ class Toadhopper::TestInitialization < Test::Unit::TestCase
     end
   end
 
+  def test_ca_file
+    assert File.exists? Toadhopper::CA_FILE
+  end
+
   def assert_toad_behavior(toad)
     assert_kind_of Toadhopper, toad
     assert_equal MY_KEY, toad.api_key

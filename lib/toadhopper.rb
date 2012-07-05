@@ -7,6 +7,12 @@ require 'toadhopper_exception'
 class Toadhopper
   VERSION = '2.1'
   FILTER_REPLACEMENT = "[FILTERED]"
+  # CA_FILE: Path to an updated certificate authority file, which was built from source
+  # If you provide a custom Net :transport and get erroneous SSL peer verification failures,
+  # try setting the transport's ca_file to Toadhopper::CA_FILE
+  # @see https://github.com/toolmantim/toadhopper/blob/master/resources/README.md
+  CA_FILE = File.expand_path File.join('..', 'resources', 'ca-bundle.crt'),
+    File.dirname(__FILE__)
 
   # Airbrake API response
   class Response < Struct.new(:status, :body, :errors); end
@@ -141,7 +147,7 @@ class Toadhopper
     http.open_timeout = 2 # seconds
     if uri.scheme.eql? 'https'
       http.use_ssl      = true
-      http.ca_file      = self.class.cert_path
+      http.ca_file      = CA_FILE
       http.verify_mode  = OpenSSL::SSL::VERIFY_PEER
     end
     http
@@ -265,24 +271,6 @@ class Toadhopper
       FILTER_REPLACEMENT
     else
       value.to_s
-    end
-  end
-
-  class << self
-    def cert_path
-      if File.exist? OpenSSL::X509::DEFAULT_CERT_FILE
-        OpenSSL::X509::DEFAULT_CERT_FILE
-      else
-        local_cert_path
-      end
-    end
-
-    # Local certificate path, which was built from source
-    #
-    # @see https://github.com/toolmantim/toadhopper/blob/master/resources/README.md
-    def local_cert_path
-      relative_path = File.join('..', 'resources', 'ca-bundle.crt')
-      File.expand_path(relative_path, File.dirname(__FILE__))
     end
   end
 end
