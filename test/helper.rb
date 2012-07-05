@@ -2,6 +2,7 @@ require 'bundler/setup'
 require 'test/unit'
 require 'fakeweb'
 require 'toadhopper'
+require 'xml'
 
 def reset_test_env
   FakeWeb.clean_registry
@@ -19,6 +20,20 @@ end
 
 def toadhopper_args
   ENV['AIRBRAKE_FULL_TEST'] ? {:notify_host => 'https://airbrake.io'} : {}
+end
+
+def assert_valid_airbrake_xml(body)
+  # prepare schema for validation
+  xsd_path = File.expand_path File.join('resources', 'airbrake_2_2.xsd'),
+    File.dirname(__FILE__)
+  schema = XML::Schema.document XML::Document.file xsd_path
+  # validate xml document
+  begin
+    assert XML::Document.string(body).validate_schema schema
+  rescue XML::Error
+    warn "INVALID Airbrake xml:\n #{body}"
+    raise
+  end
 end
 
 def error

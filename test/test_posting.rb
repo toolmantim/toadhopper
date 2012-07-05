@@ -8,6 +8,7 @@ class Toadhopper::TestPosting < Test::Unit::TestCase
     response = Toadhopper(key).post!(error)
     # Check our request
     assert_match key, FakeWeb.last_request.body, FakeWeb.last_request.body
+    assert_valid_airbrake_xml FakeWeb.last_request.body
     # Check how we capture the mock response
     assert_equal 200, response.status, response
     assert_equal response_body, response.body, response
