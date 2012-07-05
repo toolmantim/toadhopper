@@ -23,6 +23,7 @@ class Toadhopper
   #   :deploy_url  - [String] Absolute URL to use for deploy tracking
   #   :transport   - [Net::HTTP|Net::HTTP::Proxy] A customized Net::* object
   def initialize(api_key, params = {})
+    @filters    = []
     @api_key    = api_key
 
     notify_host = URI.parse(params[:notify_host] || 'http://airbrake.io')
