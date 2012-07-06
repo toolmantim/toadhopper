@@ -5,8 +5,10 @@ require 'toadhopper_exception'
 
 # Posts errors to the Airbrake API
 class Toadhopper
-  VERSION = '2.1'
-  FILTER_REPLACEMENT = "[FILTERED]"
+  VERSION             = '2.1'
+  FILTER_REPLACEMENT  = "[FILTERED]"
+  DEFAULT_DOMAIN      = 'airbrake.io'
+  DEFAULT_NOTIFY_HOST = 'http://'+DEFAULT_DOMAIN
   # CA_FILE: Path to an updated certificate authority file, which was built from source
   # If you provide a custom Net :transport and get erroneous SSL peer verification failures,
   # try setting the transport's ca_file to Toadhopper::CA_FILE
@@ -32,7 +34,7 @@ class Toadhopper
     @filters    = []
     @api_key    = api_key
 
-    notify_host = URI.parse(params[:notify_host] || 'http://airbrake.io')
+    notify_host = URI.parse(params[:notify_host] || DEFAULT_NOTIFY_HOST)
     @transport  = params.delete :transport
     if @transport and not params[:notify_host]
       notify_host.scheme  = 'https' if @transport.use_ssl?

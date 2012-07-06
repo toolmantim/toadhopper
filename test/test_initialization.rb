@@ -3,10 +3,15 @@ require 'helper'
 class Toadhopper::TestInitialization < Test::Unit::TestCase
   MY_KEY = 'my key'
 
+  def test_defaults
+    assert_equal 'airbrake.io', Toadhopper::DEFAULT_DOMAIN
+    assert_equal 'http://airbrake.io', Toadhopper::DEFAULT_NOTIFY_HOST
+  end
+
   def test_no_params
     toad = Toadhopper.new MY_KEY
     assert_toad_behavior toad
-    assert_match 'http://airbrake.io', toad.error_url.to_s
+    assert_match Toadhopper::DEFAULT_NOTIFY_HOST, toad.error_url.to_s
     assert ! toad.secure?
   end
 

@@ -1,10 +1,12 @@
 require 'helper'
 
 class Toadhopper::TestPosting < Test::Unit::TestCase
+  MY_ERROR_URL = "#{Toadhopper::DEFAULT_NOTIFY_HOST}/notifier_api/v2/notices"
+
   def test_mock_successful_posting
     key = 'lolc@tz'
     response_body = posting_response_good
-    FakeWeb.register_uri(:post, 'http://airbrake.io/notifier_api/v2/notices', :body => response_body, :status => ['200', 'OK'])
+    FakeWeb.register_uri(:post, MY_ERROR_URL, :body => response_body, :status => ['200', 'OK'])
     response = Toadhopper(key).post!(error)
     # Check our request
     assert_match key, FakeWeb.last_request.body, FakeWeb.last_request.body
@@ -17,7 +19,7 @@ class Toadhopper::TestPosting < Test::Unit::TestCase
   def test_mock_unsuccessful_posting
     key = 'roflcopt3r'
     response_body = posting_response_bad_apikey
-    FakeWeb.register_uri(:post, 'http://airbrake.io/notifier_api/v2/notices', :body => response_body, :status => ['422', '422 status code 422'])
+    FakeWeb.register_uri(:post, MY_ERROR_URL, :body => response_body, :status => ['422', '422 status code 422'])
     response = Toadhopper(key).post! error
     # Check how we capture the mock response
     assert_equal response_body, response.body, response
@@ -67,7 +69,7 @@ class Toadhopper::TestPosting < Test::Unit::TestCase
   def transport
     port = nil
     port = Net::HTTP.https_default_port if ENV['AIRBRAKE_FULL_TEST']
-    transport = Net::HTTP.new 'airbrake.io', port
+    transport = Net::HTTP.new Toadhopper::DEFAULT_DOMAIN, port
     transport.read_timeout = 7 # seconds
     transport.open_timeout = 7 # seconds
     if ENV['AIRBRAKE_FULL_TEST']

@@ -19,7 +19,7 @@ def toadhopper_api_key
 end
 
 def toadhopper_args
-  ENV['AIRBRAKE_FULL_TEST'] ? {:notify_host => 'https://airbrake.io'} : {}
+  ENV['AIRBRAKE_FULL_TEST'] ? {:notify_host => "https://#{Toadhopper::DEFAULT_DOMAIN}"} : {}
 end
 
 def assert_valid_airbrake_xml(body)
@@ -37,10 +37,10 @@ def assert_valid_airbrake_xml(body)
 end
 
 def posting_response_good
-'<notice>
+"<notice>
 <id>d87i3bc8-1854-f937-184b-e2d93711cad3</id>
-<url>http://airbrake.io/locate/d87i3bc8-1854-f937-184b-e2d93711cad3</url>
-</notice>'
+<url>#{Toadhopper::DEFAULT_NOTIFY_HOST}/locate/d87i3bc8-1854-f937-184b-e2d93711cad3</url>
+</notice>"
 end
 
 def posting_response_bad_apikey
