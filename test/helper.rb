@@ -2,7 +2,7 @@ require 'bundler/setup'
 require 'test/unit'
 require 'fakeweb'
 require 'toadhopper'
-require 'xml'
+require 'nokogiri'
 
 def reset_test_env
   FakeWeb.clean_registry
@@ -26,14 +26,11 @@ def assert_valid_airbrake_xml(body)
   # prepare schema for validation
   xsd_path = File.expand_path File.join('resources', 'airbrake_2_2.xsd'),
     File.dirname(__FILE__)
-  schema = XML::Schema.document XML::Document.file xsd_path
+  xsd = Nokogiri::XML::Schema File.read xsd_path
   # validate xml document
-  begin
-    assert XML::Document.string(body).validate_schema schema
-  rescue XML::Error
-    warn "INVALID Airbrake xml:\n #{body}"
-    raise
-  end
+  #doc = Nokogiri::XML body
+  doc = Nokogiri::XML body
+  assert xsd.valid?(doc), "The document is not valid:\n#{body}"
 end
 
 def posting_response_good
