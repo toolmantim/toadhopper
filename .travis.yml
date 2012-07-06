@@ -9,7 +9,6 @@ rvm:
   - rbx-19mode
   - ree
   - ruby-head
-  - jruby-head
 
 notifications:
   email:
