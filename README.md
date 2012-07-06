@@ -21,11 +21,36 @@ Toadhopper can transport your messages over SSL.
 
 To enable SSL, just specify a `:notify_host` with a https:// protocol.
 
-Alternatively, control freaks can use a customized Net::HTTP or Net::HTTP::Proxy to their liking with `:transport`.
-
     Toadhopper.new("YOURAPIKEY", :notify_host => 'https://airbrake.io').post!(e)
 
 _Note: You must have a paid plan for Airbrake to accept your messages over SSL._
+
+### Example with :transport
+
+Control freaks can customize a [Net::HTTP](http://ruby-doc.org/stdlib/libdoc/net/http/rdoc/Net/HTTP.html) to their liking with `:transport`.
+
+```ruby
+require 'net/https'
+require 'toadhopper'
+
+def my_transport
+  domain  = 'api.airbrake.io'
+  port    = 443
+  transport = Net::HTTP.new domain, port
+  transport.set_debug_output $stderr # View verbose debugging
+  transport.use_ssl       = true
+  transport.ca_file       = Toadhopper::CA_FILE
+  transport.verify_mode   = OpenSSL::SSL::VERIFY_PEER
+  transport.open_timeout  = 7 # seconds
+  transport.read_timeout  = 5 # seconds
+  transport
+end
+
+def my_exception_handler(exception)
+  api_key = 'YOURAPIKEY'
+  Toadhopper.new(api_key, :transport => my_transport).post! exception
+end
+```
 
 ## Deploy tracking
 
