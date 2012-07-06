@@ -62,6 +62,20 @@ class Toadhopper::TestInitialization < Test::Unit::TestCase
     assert File.exists? Toadhopper::CA_FILE
   end
 
+  def test_ca_file_validates_notify_host
+    require 'openssl'
+    require 'socket'
+    context             = OpenSSL::SSL::SSLContext.new
+    context.ca_file     = Toadhopper::CA_FILE
+    context.verify_mode = OpenSSL::SSL::VERIFY_PEER
+    client_socket = TCPSocket.new Toadhopper::DEFAULT_DOMAIN, 443
+    ssl_client = OpenSSL::SSL::SSLSocket.new client_socket, context
+    ssl_client.connect
+    ssl_client.puts 'hello server!'
+    body = ssl_client.read
+    assert_match /html/, body, "bad response body: #{body.inspect}"
+  end
+
   def assert_toad_behavior(toad)
     assert_kind_of Toadhopper, toad
     assert_equal MY_KEY, toad.api_key
