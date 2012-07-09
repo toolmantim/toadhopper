@@ -4,10 +4,11 @@ Changes since 2.0:
 
 ### Features
 
-  * Added support for submitting errors and deployments over https.
+  * Added support for submitting errors and deployments over https by providing a :notify_host with 'https://domain.com'.
+  * Allow advanced http transport settings via the :transport option
   * All optional Toadhopper host settings are now exposed for Capistrano
-    deployments, including `:airbrake_secure`, `:airbrake_notify_host`,
-    `:airbrake_error_url`, and `:airbrake_deploy_url`.
+    deployments, including `:airbrake_notify_host`, `:airbrake_error_url`
+    `:airbrake_deploy_url`, and `:airbrake_transport`.
 
 ### Bugs
 
@@ -16,7 +17,7 @@ Changes since 2.0:
 
 ### Miscellaneous
 
-  * Changed default notification domain to airbrake.io.
+  * Changed default notification domain to airbrake.io.  Note: The official domain is api.airbrake.io, but has been touch-and-go.
   * toadhopper is now tested in a continuous integration environment, thanks to [travis-ci.org](http://travis-ci.org/).
     The build is currently
     [![Build Status](https://secure.travis-ci.org/toolmantim/toadhopper.png)](http://travis-ci.org/toolmantim/toadhopper)

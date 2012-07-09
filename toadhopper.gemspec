@@ -20,9 +20,11 @@ Gem::Specification.new do |s|
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ['lib']
-  s.extra_rdoc_files  = ['README.md', 'LICENSE']
+  s.extra_rdoc_files  = ['README.md', 'LICENSE', 'CHANGELOG.md']
   
   s.add_development_dependency 'rake'
   s.add_development_dependency 'test-unit'
   s.add_development_dependency 'fakeweb'
+  s.add_development_dependency 'travis-lint'
+  s.add_development_dependency 'nokogiri'
 end

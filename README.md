@@ -19,15 +19,38 @@ You can install it via rubygems:
 
 Toadhopper can transport your messages over SSL.
 
-In order to enable SSL, just add the `:secure` option.
-
-    Toadhopper.new("YOURAPIKEY", :secure => true).post!(e)
-
-Alternatively, you can specify a `:notify_host` with a https:// protocol.
+To enable SSL, just specify a `:notify_host` with a https:// protocol.
 
     Toadhopper.new("YOURAPIKEY", :notify_host => 'https://airbrake.io').post!(e)
 
 _Note: You must have a paid plan for Airbrake to accept your messages over SSL._
+
+### Example with :transport
+
+Control freaks can customize a [Net::HTTP](http://ruby-doc.org/stdlib/libdoc/net/http/rdoc/Net/HTTP.html) to their liking with `:transport`.
+
+```ruby
+require 'net/https'
+require 'toadhopper'
+
+def my_transport
+  domain  = 'api.airbrake.io'
+  port    = 443
+  transport = Net::HTTP.new domain, port
+  transport.set_debug_output $stderr # View verbose debugging
+  transport.use_ssl       = true
+  transport.ca_file       = Toadhopper::CA_FILE
+  transport.verify_mode   = OpenSSL::SSL::VERIFY_PEER
+  transport.open_timeout  = 7 # seconds
+  transport.read_timeout  = 5 # seconds
+  transport
+end
+
+def my_exception_handler(exception)
+  api_key = 'YOURAPIKEY'
+  Toadhopper.new(api_key, :transport => my_transport).post! exception
+end
+```
 
 ## Deploy tracking
 
@@ -43,9 +66,11 @@ There is Capistrano support for deploy tracking. Simply require `toadhopper/capi
     
     set :airbrake_api_key, 'YOURAPIKEY'
 
-Set the variable `airbrake_secure` as well if you want deploy tracking over ssl:
-
-    set :airbrake_secure, true
+**Supported Capistrano Keys**
+  * `:airbrake_notify_host`
+  * `:airbrake_error_url`
+  * `:airbrake_deploy_url`
+  * `:airbrake_transport`
 
 ## Compatibility
 
@@ -54,13 +79,12 @@ Toadhopper is tested against and compatible with the following ruby platforms:
   * **1.8.7**
   * **1.9.2**
   * **1.9.3**
-  * **ree 1.8.7-2011.03**
-  * **jruby 1.6.3**
+  * **ree 1.8.7-2012.02**
+  * **jruby 1.6.7** in both 1.8 mode and 1.9 mode
+  * **rubinius 2.0.testing** branch in both 1.8 mode and 1.9 mode
 
     For jruby support, you need to `gem install jruby-openssl` if you do not already have that gem.
     [More info on why this is.](http://blog.mattwynne.net/2011/04/26/targeting-multiple-platforms-jruby-etc-with-a-rubygems-gemspec/)
-
-  * **rubinius 2.0.testing** branch in ruby 1.8 mode (1.9 mode is not supported)
 
 ## Development
 

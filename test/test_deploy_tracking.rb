@@ -7,7 +7,7 @@ class Toadhopper::TestDeployTracking < Test::Unit::TestCase
 
   def test_deploy
     response_body = 'Recorded deploy of My Awesome App to test.'
-    FakeWeb.register_uri(:post, 'http://airbrake.io/deploys.txt', :body => response_body, :status => ['200', 'Ok'])
+    FakeWeb.register_uri(:post, "http://#{Toadhopper::DEFAULT_DOMAIN}/deploys.txt", :body => response_body, :status => ['200', 'Ok'])
     response = Toadhopper(BOGUS_KEY).deploy!(options)
     # Check our request
     assert_equal expected_parameters, query_to_hash(FakeWeb.last_request.body)
@@ -19,8 +19,8 @@ class Toadhopper::TestDeployTracking < Test::Unit::TestCase
 
   def test_fake_secure_deploy
     response_body = 'Recorded deploy of Foo to test.'
-    FakeWeb.register_uri(:post, 'https://airbrake.io/deploys.txt', :body => response_body, :status => ['200', 'OK'])
-    response = Toadhopper.new(BOGUS_KEY, :secure => true).deploy!(options)
+    FakeWeb.register_uri(:post, "https://#{Toadhopper::DEFAULT_DOMAIN}/deploys.txt", :body => response_body, :status => ['200', 'OK'])
+    response = Toadhopper.new(BOGUS_KEY, :notify_host => "https://#{Toadhopper::DEFAULT_DOMAIN}").deploy!(options)
     # Check our request
     assert_equal expected_parameters, query_to_hash(FakeWeb.last_request.body)
     # Check how we capture the mock response
@@ -40,10 +40,10 @@ class Toadhopper::TestDeployTracking < Test::Unit::TestCase
     assert_match expected_error, response.errors.first, response
   end
 
-  if ENV['AIRBRAKE_API_KEY'] and ENV['AIRBRAKE_FULL_TEST']
+  if toadhopper_api_key and ENV['AIRBRAKE_FULL_TEST']
     def test_deploy_integration_good_key
       FakeWeb.allow_net_connect = true
-      opts = {:scm_repository => 'git://github.com/toolmantim/toadhopper.git', :scm_revision => 'a4aa47e5146c5a4cf84d87654efe53934b99daad'}
+      opts = {:scm_repository => 'git://github.com/toolmantim/toadhopper.git', :scm_revision => '5e15028652023c98c70ac275b5f04bb368e04773'}
       response = toadhopper.deploy!(opts)
       # Check how we capture the live response
       assert_equal 200, response.status, response

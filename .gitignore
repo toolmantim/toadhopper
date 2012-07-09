@@ -1,4 +1,7 @@
+/.rbx
+/.rvmrc
 pkg
+.DS_Store
 .yardoc
 doc
 coverage
