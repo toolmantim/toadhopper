@@ -14,6 +14,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         :notify_host  => fetch(:airbrake_notify_host, nil),
         :error_url    => fetch(:airbrake_error_url, nil),
         :deploy_url   => fetch(:airbrake_deploy_url, nil),
+        :transport    => fetch(:airbrake_transport, nil),
       }
       puts 'Notifying Airbrake of deploy'
       deploy_options = {:framework_env => framework_env, :scm_revision => current_revision, :scm_repository => repository}
