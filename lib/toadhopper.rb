@@ -5,25 +5,75 @@ require 'toadhopper_exception'
 
 # Posts errors to the Airbrake API
 class Toadhopper
-  VERSION = '2.1'
-  FILTER_REPLACEMENT = "[FILTERED]"
+  VERSION             = '2.1'
+  FILTER_REPLACEMENT  = "[FILTERED]"
+  DEFAULT_DOMAIN      = 'airbrake.io'
+  DEFAULT_NOTIFY_HOST = 'http://'+DEFAULT_DOMAIN
+  # CA_FILE: Path to an updated certificate authority file, which was built from source
+  # If you provide a custom Net :transport and get erroneous SSL peer verification failures,
+  # try setting the transport's ca_file to Toadhopper::CA_FILE
+  # @see https://github.com/toolmantim/toadhopper/blob/master/resources/README.md
+  CA_FILE = File.expand_path File.join('..', 'resources', 'ca-bundle.crt'),
+    File.dirname(__FILE__)
 
   # Airbrake API response
   class Response < Struct.new(:status, :body, :errors); end
 
-  attr_reader :api_key, :notify_host
+  attr_reader :api_key, :error_url, :deploy_url
 
+  # Initialize and configure a Toadhopper
+  #
+  # @param [String] Your api key
+  # @param [Hash] params [optional]
+  #
+  #   :notify_host - [String] The default host to use
+  #   :error_url   - [String] Absolute URL to use for error reporting
+  #   :deploy_url  - [String] Absolute URL to use for deploy tracking
+  #   :transport   - [Net::HTTP|Net::HTTP::Proxy] A customized Net::* object
   def initialize(api_key, params = {})
-    secure = params.delete(:secure)
-    if secure and params[:notify_host]
-      raise ToadhopperException, 'You cannot specify :secure and :notify_host options at the same time.'
-    end
-    scheme = secure ? 'https' : 'http'
+    @filters    = []
+    @api_key    = api_key
 
-    @api_key     = api_key
-    @notify_host = params.delete(:notify_host) || "#{scheme}://airbrake.io"
-    @error_url   = params.delete(:error_url)   || "#{@notify_host}/notifier_api/v2/notices"
-    @deploy_url  = params.delete(:deploy_url)  || "#{@notify_host}/deploys.txt"
+    notify_host = URI.parse(params[:notify_host] || DEFAULT_NOTIFY_HOST)
+    @transport  = params.delete :transport
+    if @transport and not params[:notify_host]
+      notify_host.scheme  = 'https' if @transport.use_ssl?
+      notify_host.host    = @transport.address
+      notify_host.port    = @transport.port
+    end
+
+    @error_url  = URI.parse(params.delete(:error_url)  || "#{notify_host}/notifier_api/v2/notices")
+    @deploy_url = URI.parse(params.delete(:deploy_url) || "#{notify_host}/deploys.txt")
+
+    validate!
+  end
+
+  def validate!
+    validate_url! :error_url
+    validate_url! :deploy_url
+  end
+
+  def validate_url!(sym)
+    url = instance_variable_get '@'+sym.to_s
+    unless url.absolute?
+      raise ToadhopperException, "#{sym} #{url.inspect} must begin with http:// or https://"
+    end
+
+    if @transport
+      if @transport.use_ssl? != url.scheme.eql?('https')
+        raise ToadhopperException,
+          ":transport use_ssl? setting of #{@transport.use_ssl?.inspect} does not match" +
+          " #{sym} scheme #{url.scheme.inspect}"
+      elsif @transport.address != url.host
+        raise ToadhopperException,
+          ":transport hostname #{@transport.address.inspect} does not match" +
+          " #{sym} hostname #{url.host.inspect}"
+      elsif @transport.port != url.port
+        raise ToadhopperException,
+          ":transport port #{@transport.port.inspect} does not match" +
+          " #{sym} port #{url.port.inspect}"
+      end
+    end
   end
 
   # Sets patterns to +[FILTER]+ out sensitive data such as +/password/+, +/email/+ and +/credit_card_number/+
@@ -78,7 +128,31 @@ class Toadhopper
     params['deploy[local_username]'] = options[:username] || %x(whoami).strip
     params['deploy[scm_repository]'] = options[:scm_repository]
     params['deploy[scm_revision]'] = options[:scm_revision]
-    response(URI.parse(@deploy_url), params)
+    response(@deploy_url, params)
+  end
+
+  def secure?
+    connection(@deploy_url).use_ssl? and connection(@error_url).use_ssl?
+  end
+
+  # Provider of the net transport used
+  #
+  # MIT Licensing Note: Portions of logic below for connecting via SSL were
+  # copied from the airbrake project under the MIT License.
+  #
+  # @see https://github.com/airbrake/airbrake/blob/master/MIT-LICENSE
+  def connection(uri)
+    return @transport if @transport
+
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.read_timeout = 5 # seconds
+    http.open_timeout = 2 # seconds
+    if uri.scheme.eql? 'https'
+      http.use_ssl      = true
+      http.ca_file      = CA_FILE
+      http.verify_mode  = OpenSSL::SSL::VERIFY_PEER
+    end
+    http
   end
 
   private
@@ -113,9 +187,8 @@ class Toadhopper
   end
 
   def post_document(document, headers={})
-    uri = URI.parse(@error_url)
     all_headers = {'Content-type' => 'text/xml', 'Accept' => 'text/xml, application/xml'}.merge(headers)
-    response(uri, document, all_headers)
+    response(@error_url, document, all_headers)
   end
 
   def response(uri, data, headers=nil)
@@ -139,7 +212,7 @@ class Toadhopper
   end
 
   def parse_response(response)
-    if response.body.include? '<?xml'
+    if response.body.include? '</'
       parse_xml_response(response)
     else
       parse_text_response(response)
@@ -154,7 +227,9 @@ class Toadhopper
 
   def parse_text_response(response)
     errors = []
-    errors << response.body unless response.kind_of? Net::HTTPSuccess
+    unless response.kind_of? Net::HTTPSuccess or response.body.to_s.empty?
+      errors << response.body
+    end
     Response.new(response.code.to_i, response.body, errors)
   end
 
@@ -198,42 +273,6 @@ class Toadhopper
       FILTER_REPLACEMENT
     else
       value.to_s
-    end
-  end
-
-  # Initialize a new http connection
-  #
-  # MIT Licensing Note: Portions of logic below for connecting via SSL were
-  # copied from the airbrake project under the MIT License.
-  #
-  # @see https://github.com/airbrake/airbrake/blob/master/MIT-LICENSE
-  def connection(uri)
-    http = Net::HTTP.new(uri.host, uri.port)
-    http.read_timeout = 5 # seconds
-    http.open_timeout = 2 # seconds
-    http.use_ssl = 'https' == uri.scheme
-    if http.use_ssl?
-      http.ca_file      = self.class.cert_path
-      http.verify_mode  = OpenSSL::SSL::VERIFY_PEER
-    end
-    http
-  end
-
-  class << self
-    def cert_path
-      if File.exist? OpenSSL::X509::DEFAULT_CERT_FILE
-        OpenSSL::X509::DEFAULT_CERT_FILE
-      else
-        local_cert_path
-      end
-    end
-
-    # Local certificate path, which was built from source
-    #
-    # @see https://github.com/toolmantim/toadhopper/blob/master/resources/README.md
-    def local_cert_path
-      relative_path = File.join('..', 'resources', 'ca-bundle.crt')
-      File.expand_path(relative_path, File.dirname(__FILE__))
     end
   end
 end
