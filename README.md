@@ -1,5 +1,8 @@
 [![Build Status](https://secure.travis-ci.org/toolmantim/toadhopper.png)](http://travis-ci.org/toolmantim/toadhopper)
 
+**Deprecation warning: this library is outdated. Please use the
+[new official Airbrake library](https://github.com/airbrake/airbrake) instead.**
+
 A base library for [Airbrake](http://www.airbrake.io/) error reporting.
 
 Toadhopper can be used to report plain old Ruby exceptions, or to build a framework-specific gem such as [toadhopper-sinatra](http://github.com/toolmantim/toadhopper-sinatra).
@@ -57,13 +60,13 @@ end
 You can use Toadhopper to notify Airbrake of deployments:
 
     Toadhopper('YOURAPIKEY').deploy!
-    
+
 The method accepts options to set the environment, SCM revision, etc.
 
 There is Capistrano support for deploy tracking. Simply require `toadhopper/capistrano` in your deploy config and set the variable `airbrake_api_key`:
 
     require 'toadhopper/capistrano'
-    
+
     set :airbrake_api_key, 'YOURAPIKEY'
 
 **Supported Capistrano Keys**
